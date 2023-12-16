@@ -1,3 +1,5 @@
+// USS reference: https://docs.unity3d.com/Manual/UIE-USS-Properties-Reference.html
+
 const fs = require('fs');
 const cheerio = require('cheerio');
 const css = require('css');
@@ -19,7 +21,8 @@ function html2uxml() {
     parsed = parsed.split('</body>').join(xmlfooter);
 
     fs.writeFile('./view.uxml', parsed, 'utf-8', err => {
-        console.log(err);
+      if(err) console.log(err);
+      else console.log('UXML written ✓');
     });
 }
 
@@ -27,14 +30,11 @@ function html2uxml() {
 function convertToXML(element) {
     let xmlString = '';
   
-    // Map specific tag names to their XML equivalents
     const tagMap = {
       div: 'ui:VisualElement',
       p: 'ui:Label'
-      // Add other specific tag mappings as needed
     };
-  
-    // Get tag name or use a default tag name if not found in the mapping
+
     const tagName = tagMap[element.get(0).tagName] || element.get(0).tagName;
   
     xmlString += `<${tagName}`;
@@ -42,8 +42,7 @@ function convertToXML(element) {
     if(tagName == tagMap['p']) {
         xmlString += ' text="' + element.first().text() + '"';
     }
-  
-    // Convert attributes to XML attributes
+
     element.each((_, elem) => {
       const attributes = elem.attribs;
       for (const attr in attributes) {
@@ -51,11 +50,9 @@ function convertToXML(element) {
       }
     });
   
-    // Check if the element has children
     if (element.children().length > 0) {
       xmlString += '>';
   
-      // Recursively handle children
       element.children().each((index, child) => {
         const childElement = $(child);
         xmlString += convertToXML(childElement);
@@ -71,11 +68,14 @@ function convertToXML(element) {
 }
 
 fs.writeFile('./style.uss', css2uss(parsedCSS.stylesheet.rules), 'utf-8', err => {
-    console.log(err);
+    if(err) console.log(err);
+    else console.log('USS written ✓');
 });
 
 function css2uss(rules) {
     let result = '';
+    let not_implemented = {};
+    let unity_support = {};
 
     for(let i = 0; i < rules.length; i++) {
         let rule = rules[i];
@@ -87,10 +87,15 @@ function css2uss(rules) {
                 if(uss_properties[declaration.property].native == true) {
                     result += '    ' + declaration.property + ': ' + translateValue(declaration.value) + ';\n';
                 }
+                else not_implemented[declaration.property] = true;
             }
+            else unity_support[declaration.property] = true;
         }
         result += '}\n';        
     }
+
+    if(Object.keys(unity_support).length > 0) console.warn("- UI Toolkit doesn't support: " + Object.keys(unity_support).join(', '));
+    if(Object.keys(not_implemented).length > 0) console.warn('- Not implemented yet: ' + Object.keys(not_implemented).join(', '));
     
     return result;
 }

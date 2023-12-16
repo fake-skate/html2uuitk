@@ -72,13 +72,13 @@
         "description": "Color of the element’s bottom border."
     },
     "border-bottom-left-radius": {
-        "native": false,
+        "native": true,
         "inherited": false,
         "animatable": "full",
         "description": "The radius of the bottom-left corner when a rounded rectangle is drawn in the element’s box."
     },
     "border-bottom-right-radius": {
-        "native": false,
+        "native": true,
         "inherited": false,
         "animatable": "full",
         "description": "The radius of the bottom-right corner when a rounded rectangle is drawn in the element’s box."
@@ -132,13 +132,13 @@
         "description": "Color of the element’s top border."
     },
     "border-top-left-radius": {
-        "native": false,
+        "native": true,
         "inherited": false,
         "animatable": "full",
         "description": "The radius of the top-left corner when a rounded rectangle is drawn in the element’s box."
     },
     "border-top-right-radius": {
-        "native": false,
+        "native": true,
         "inherited": false,
         "animatable": "full",
         "description": "The radius of the top-right corner when a rounded rectangle is drawn in the element’s box."
@@ -408,13 +408,13 @@
         "description": "Time a transition animation should take to complete."
     },
     "transition-property": {
-        "native": false,
+        "native": true,
         "inherited": false,
         "animatable": "false",
         "description": "Properties to which a transition effect should be applied."
     },
     "transition-timing-function": {
-        "native": false,
+        "native": true,
         "inherited": false,
         "animatable": "false",
         "description": "Determines how intermediate values are calculated for properties modified by a transition effect."
