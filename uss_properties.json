@@ -1,0 +1,554 @@
+{
+    "align-content": {
+        "native": true,
+        "inherited": false,
+        "animatable": "discrete",
+        "description": "Alignment of the whole area of children on the cross axis if they span over multiple lines in this container."
+    },
+    "align-items": {
+        "native": true,
+        "inherited": false,
+        "animatable": "discrete",
+        "description": "Alignment of children on the cross axis of this container."
+    },
+    "align-self": {
+        "native": true,
+        "inherited": false,
+        "animatable": "discrete",
+        "description": "Similar to align-items, but only for this specific element."
+    },
+    "all": {
+        "native": true,
+        "inherited": false,
+        "animatable": "full",
+        "description": "Allows resetting all properties with the initial keyword. Does not apply to custom USS properties."
+    },
+    "background-color": {
+        "native": true,
+        "inherited": false,
+        "animatable": "full",
+        "description": "Background color to paint in the element’s box."
+    },
+    "background-image": {
+        "native": true,
+        "inherited": false,
+        "animatable": "discrete",
+        "description": "Background image to paint in the element’s box."
+    },
+    "background-position": {
+        "native": true,
+        "inherited": false,
+        "animatable": "full",
+        "description": "Background image position value."
+    },
+    "background-position-x": {
+        "native": true,
+        "inherited": false,
+        "animatable": "discrete",
+        "description": "Background image x position value."
+    },
+    "background-position-y": {
+        "native": true,
+        "inherited": false,
+        "animatable": "discrete",
+        "description": "Background image y position value."
+    },
+    "background-repeat": {
+        "native": true,
+        "inherited": false,
+        "animatable": "discrete",
+        "description": "Background image repeat value."
+    },
+    "background-size": {
+        "native": true,
+        "inherited": false,
+        "animatable": "full",
+        "description": "Background image size value."
+    },
+    "border-bottom-color": {
+        "native": true,
+        "inherited": false,
+        "animatable": "full",
+        "description": "Color of the element’s bottom border."
+    },
+    "border-bottom-left-radius": {
+        "native": false,
+        "inherited": false,
+        "animatable": "full",
+        "description": "The radius of the bottom-left corner when a rounded rectangle is drawn in the element’s box."
+    },
+    "border-bottom-right-radius": {
+        "native": false,
+        "inherited": false,
+        "animatable": "full",
+        "description": "The radius of the bottom-right corner when a rounded rectangle is drawn in the element’s box."
+    },
+    "border-bottom-width": {
+        "native": true,
+        "inherited": false,
+        "animatable": "full",
+        "description": "Space reserved for the bottom edge of the border during the layout phase."
+    },
+    "border-color": {
+        "native": true,
+        "inherited": false,
+        "animatable": "full",
+        "description": "Shorthand for border-top-color, border-right-color, border-bottom-color, border-left-color"
+    },
+    "border-left-color": {
+        "native": true,
+        "inherited": false,
+        "animatable": "full",
+        "description": "Color of the element’s left border."
+    },
+    "border-left-width": {
+        "native": true,
+        "inherited": false,
+        "animatable": "full",
+        "description": "Space reserved for the left edge of the border during the layout phase."
+    },
+    "border-radius": {
+        "native": false,
+        "inherited": false,
+        "animatable": "full",
+        "description": "Shorthand for border-top-left-radius, border-top-right-radius, border-bottom-right-radius, border-bottom-left-radius"
+    },
+    "border-right-color": {
+        "native": true,
+        "inherited": false,
+        "animatable": "full",
+        "description": "Color of the element’s right border."
+    },
+    "border-right-width": {
+        "native": true,
+        "inherited": false,
+        "animatable": "full",
+        "description": "Space reserved for the right edge of the border during the layout phase."
+    },
+    "border-top-color": {
+        "native": true,
+        "inherited": false,
+        "animatable": "full",
+        "description": "Color of the element’s top border."
+    },
+    "border-top-left-radius": {
+        "native": false,
+        "inherited": false,
+        "animatable": "full",
+        "description": "The radius of the top-left corner when a rounded rectangle is drawn in the element’s box."
+    },
+    "border-top-right-radius": {
+        "native": false,
+        "inherited": false,
+        "animatable": "full",
+        "description": "The radius of the top-right corner when a rounded rectangle is drawn in the element’s box."
+    },
+    "border-top-width": {
+        "native": true,
+        "inherited": false,
+        "animatable": "full",
+        "description": "Space reserved for the top edge of the border during the layout phase."
+    },
+    "border-width": {
+        "native": true,
+        "inherited": false,
+        "animatable": "full",
+        "description": "Shorthand for border-top-width, border-right-width, border-bottom-width, border-left-width"
+    },
+    "bottom": {
+        "native": true,
+        "inherited": false,
+        "animatable": "full",
+        "description": "Bottom distance from the element’s box during layout."
+    },
+    "color": {
+        "native": true,
+        "inherited": true,
+        "animatable": "full",
+        "description": "Color to use when drawing the text of an element."
+    },
+    "cursor": {
+        "native": false,
+        "inherited": false,
+        "animatable": "false",
+        "description": "Mouse cursor to display when the mouse pointer is over an element."
+    },
+    "display": {
+        "native": false,
+        "inherited": false,
+        "animatable": "discrete",
+        "description": "Defines how an element is displayed in the layout."
+    },
+    "flex": {
+        "native": true,
+        "inherited": false,
+        "animatable": "full",
+        "description": "Shorthand for flex-grow, flex-shrink, flex-basis"
+    },
+    "flex-basis": {
+        "native": true,
+        "inherited": false,
+        "animatable": "full",
+        "description": "Initial main size of a flex item, on the main flex axis. The final layout might be smaller or larger, according to the flex shrinking and growing determined by the other flex properties."
+    },
+    "flex-direction": {
+        "native": true,
+        "inherited": false,
+        "animatable": "discrete",
+        "description": "Direction of the main axis to layout children in a container."
+    },
+    "flex-grow": {
+        "native": true,
+        "inherited": false,
+        "animatable": "full",
+        "description": "Specifies how the item will grow relative to the rest of the flexible items inside the same container."
+    },
+    "flex-shrink": {
+        "native": true,
+        "inherited": false,
+        "animatable": "full",
+        "description": "Specifies how the item will shrink relative to the rest of the flexible items inside the same container."
+    },
+    "flex-wrap": {
+        "native": true,
+        "inherited": false,
+        "animatable": "discrete",
+        "description": "Placement of children over multiple lines if not enough space is available in this container."
+    },
+    "font-size": {
+        "native": true,
+        "inherited": true,
+        "animatable": "full",
+        "description": "Font size to draw the element’s text."
+    },
+    "height": {
+        "native": true,
+        "inherited": false,
+        "animatable": "full",
+        "description": "Fixed height of an element for the layout."
+    },
+    "justify-content": {
+        "native": true,
+        "inherited": false,
+        "animatable": "discrete",
+        "description": "Justification of children on the main axis of this container."
+    },
+    "left": {
+        "native": true,
+        "inherited": false,
+        "animatable": "full",
+        "description": "Left distance from the element’s box during layout."
+    },
+    "letter-spacing": {
+        "native": true,
+        "inherited": true,
+        "animatable": "full",
+        "description": "Increases or decreases the space between characters."
+    },
+    "margin": {
+        "native": true,
+        "inherited": false,
+        "animatable": "full",
+        "description": "Shorthand for margin-top, margin-right, margin-bottom, margin-left"
+    },
+    "margin-bottom": {
+        "native": true,
+        "inherited": false,
+        "animatable": "full",
+        "description": "Space reserved for the bottom edge of the margin during the layout phase."
+    },
+    "margin-left": {
+        "native": true,
+        "inherited": false,
+        "animatable": "full",
+        "description": "Space reserved for the left edge of the margin during the layout phase."
+    },
+    "margin-right": {
+        "native": true,
+        "inherited": false,
+        "animatable": "full",
+        "description": "Space reserved for the right edge of the margin during the layout phase."
+    },
+    "margin-top": {
+        "native": true,
+        "inherited": false,
+        "animatable": "full",
+        "description": "Space reserved for the top edge of the margin during the layout phase."
+    },
+    "max-height": {
+        "native": true,
+        "inherited": false,
+        "animatable": "full",
+        "description": "Maximum height for an element, when it is flexible or measures its own size."
+    },
+    "max-width": {
+        "native": true,
+        "inherited": false,
+        "animatable": "full",
+        "description": "Maximum width for an element, when it is flexible or measures its own size."
+    },
+    "min-height": {
+        "native": true,
+        "inherited": false,
+        "animatable": "full",
+        "description": "Minimum height for an element, when it is flexible or measures its own size."
+    },
+    "min-width": {
+        "native": true,
+        "inherited": false,
+        "animatable": "full",
+        "description": "Minimum width for an element, when it is flexible or measures its own size."
+    },
+    "opacity": {
+        "native": false,
+        "inherited": false,
+        "animatable": "full",
+        "description": "Specifies the transparency of an element and of its children."
+    },
+    "overflow": {
+        "native": true,
+        "inherited": false,
+        "animatable": "discrete",
+        "description": "How a container behaves if its content overflows its own box."
+    },
+    "padding": {
+        "native": true,
+        "inherited": false,
+        "animatable": "full",
+        "description": "Shorthand for padding-top, padding-right, padding-bottom, padding-left"
+    },
+    "padding-bottom": {
+        "native": true,
+        "inherited": false,
+        "animatable": "full",
+        "description": "Space reserved for the bottom edge of the padding during the layout phase."
+    },
+    "padding-left": {
+        "native": true,
+        "inherited": false,
+        "animatable": "full",
+        "description": "Space reserved for the left edge of the padding during the layout phase."
+    },
+    "padding-right": {
+        "native": true,
+        "inherited": false,
+        "animatable": "full",
+        "description": "Space reserved for the right edge of the padding during the layout phase."
+    },
+    "padding-top": {
+        "native": true,
+        "inherited": false,
+        "animatable": "full",
+        "description": "Space reserved for the top edge of the padding during the layout phase."
+    },
+    "position": {
+        "native": true,
+        "inherited": false,
+        "animatable": "discrete",
+        "description": "Element’s positioning in its parent container."
+    },
+    "right": {
+        "native": true,
+        "inherited": false,
+        "animatable": "full",
+        "description": "Right distance from the element’s box during layout."
+    },
+    "rotate": {
+        "native": false,
+        "inherited": false,
+        "animatable": "full",
+        "description": "A rotation transformation."
+    },
+    "scale": {
+        "native": false,
+        "inherited": false,
+        "animatable": "full",
+        "description": "A scaling transformation."
+    },
+    "text-overflow": {
+        "native": true,
+        "inherited": false,
+        "animatable": "discrete",
+        "description": "The element’s text overflow mode."
+    },
+    "text-shadow": {
+        "native": true,
+        "inherited": true,
+        "animatable": "full",
+        "description": "Drop shadow of the text."
+    },
+    "top": {
+        "native": true,
+        "inherited": false,
+        "animatable": "full",
+        "description": "Top distance from the element’s box during layout."
+    },
+    "transform-origin": {
+        "native": false,
+        "inherited": false,
+        "animatable": "full",
+        "description": "The transformation origin is the point around which a transformation is applied."
+    },
+    "transition": {
+        "native": false,
+        "inherited": false,
+        "animatable": "false",
+        "description": "Shorthand for transition-delay, transition-duration, transition-property, transition-timing-function"
+    },
+    "transition-delay": {
+        "native": false,
+        "inherited": false,
+        "animatable": "false",
+        "description": "Duration to wait before starting a property’s transition effect when its value changes."
+    },
+    "transition-duration": {
+        "native": true,
+        "inherited": false,
+        "animatable": "false",
+        "description": "Time a transition animation should take to complete."
+    },
+    "transition-property": {
+        "native": false,
+        "inherited": false,
+        "animatable": "false",
+        "description": "Properties to which a transition effect should be applied."
+    },
+    "transition-timing-function": {
+        "native": false,
+        "inherited": false,
+        "animatable": "false",
+        "description": "Determines how intermediate values are calculated for properties modified by a transition effect."
+    },
+    "translate": {
+        "native": false,
+        "inherited": false,
+        "animatable": "full",
+        "description": "A translate transformation."
+    },
+    "-unity-background-image-tint-color": {
+        "native": false,
+        "inherited": false,
+        "animatable": "full",
+        "description": "Tinting color for the element’s backgroundImage."
+    },
+    "-unity-background-scale-mode": {
+        "native": false,
+        "inherited": false,
+        "animatable": "discrete",
+        "description": "Background image scaling in the element’s box."
+    },
+    "-unity-font": {
+        "native": false,
+        "inherited": true,
+        "animatable": "discrete",
+        "description": "Font to draw the element’s text, defined as a Font object."
+    },
+    "-unity-font-definition": {
+        "native": false,
+        "inherited": true,
+        "animatable": "discrete",
+        "description": "Font to draw the element’s text, defined as a FontDefinition structure. It takes precedence over -unity-font."
+    },
+    "-unity-font-style": {
+        "native": false,
+        "inherited": true,
+        "animatable": "discrete",
+        "description": "Font style and weight (normal, bold, italic) to draw the element’s text."
+    },
+    "-unity-overflow-clip-box": {
+        "native": false,
+        "inherited": false,
+        "animatable": "discrete",
+        "description": "Specifies which box the element content is clipped against."
+    },
+    "-unity-paragraph-spacing": {
+        "native": false,
+        "inherited": true,
+        "animatable": "full",
+        "description": "Increases or decreases the space between paragraphs."
+    },
+    "-unity-slice-bottom": {
+        "native": false,
+        "inherited": false,
+        "animatable": "full",
+        "description": "Size of the 9-slice’s bottom edge when painting an element’s background image."
+    },
+    "-unity-slice-left": {
+        "native": false,
+        "inherited": false,
+        "animatable": "full",
+        "description": "Size of the 9-slice’s left edge when painting an element’s background image."
+    },
+    "-unity-slice-right": {
+        "native": false,
+        "inherited": false,
+        "animatable": "full",
+        "description": "Size of the 9-slice’s right edge when painting an element’s background image."
+    },
+    "-unity-slice-scale": {
+        "native": false,
+        "inherited": false,
+        "animatable": "full",
+        "description": "Scale applied to an element’s slices."
+    },
+    "-unity-slice-top": {
+        "native": false,
+        "inherited": false,
+        "animatable": "full",
+        "description": "Size of the 9-slice’s top edge when painting an element’s background image."
+    },
+    "-unity-text-align": {
+        "native": false,
+        "inherited": true,
+        "animatable": "discrete",
+        "description": "Horizontal and vertical text alignment in the element’s box."
+    },
+    "-unity-text-outline": {
+        "native": false,
+        "inherited": false,
+        "animatable": "full",
+        "description": "Outline width and color of the text."
+    },
+    "-unity-text-outline-color": {
+        "native": false,
+        "inherited": true,
+        "animatable": "full",
+        "description": "Outline color of the text."
+    },
+    "-unity-text-outline-width": {
+        "native": false,
+        "inherited": true,
+        "animatable": "full",
+        "description": "Outline width of the text."
+    },
+    "-unity-text-overflow-position": {
+        "native": false,
+        "inherited": false,
+        "animatable": "discrete",
+        "description": "The element’s text overflow position."
+    },
+    "visibility": {
+        "native": true,
+        "inherited": true,
+        "animatable": "discrete",
+        "description": "Specifies whether or not an element is visible."
+    },
+    "white-space": {
+        "native": true,
+        "inherited": true,
+        "animatable": "discrete",
+        "description": "Word wrap over multiple lines if not enough space is available to draw the text of an element."
+    },
+    "width": {
+        "native": true,
+        "inherited": false,
+        "animatable": "full",
+        "description": "Fixed width of an element for the layout."
+    },
+    "word-spacing": {
+        "native": true,
+        "inherited": true,
+        "animatable": "full",
+        "description": "Increases or decreases the space between words."
+    }
+}
