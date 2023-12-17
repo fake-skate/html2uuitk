@@ -438,7 +438,7 @@
         "description": "Background image scaling in the element’s box."
     },
     "-unity-font": {
-        "native": false,
+        "native": true,
         "inherited": true,
         "animatable": "discrete",
         "description": "Font to draw the element’s text, defined as a Font object."

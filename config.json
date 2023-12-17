@@ -1,0 +1,10 @@
+{
+    "assets": {
+        "VCR": {
+            "path": "url('project:/Assets/Fonts/VCR_OSD_MONO_1.001.ttf')"
+        }
+    },
+    "options": {
+        "uppercase": true
+    }
+}
