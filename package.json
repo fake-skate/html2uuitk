@@ -1,6 +1,15 @@
 {
+  "name": "html2uuitk",
+  "version": "0.0.1",
+  "preferGlobal": true,
+  "bin": {
+    "html2uuitk": "./convert.js"
+  },
+  "author": "FS",
+  "license": "ISC",
   "dependencies": {
     "cheerio": "^1.0.0-rc.12",
-    "css": "^3.0.0"
+    "css": "^3.0.0",
+    "yargs": "^17.7.2"
   }
 }

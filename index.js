@@ -6,20 +6,11 @@ const css = require('css');
 const uss_properties = require('./uss_properties.json');
 const config = require('./config.json');
 
-const html = [{name: 'panasonic_menu.html', data: fs.readFileSync('panasonic_menu.html', 'utf8')}];
-const cssContent = [{name: 'reset.css', data: fs.readFileSync('reset.css', 'utf8')}, {name: 'panasonic_style.css', data: fs.readFileSync('panasonic_style.css', 'utf8')}]
+let html, cssContent, outputFolder;
 
 let xmlheader = '<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">';
 let xmlfooter = '</ui:UXML>';
 let resetAll = 'body, div, p';
-
-for(let i = 0; i < html.length; i++) {
-	html2uxml(html[i].name.split('.html').join(''), html[i].data);
-}
-
-for(let i = 0; i < cssContent.length; i++) {
-	convertCss(cssContent[i].name.split('.css').join(''), cssContent[i].data);
-}
 
 function html2uxml(name, h) {
 	const $ = cheerio.load(h);
@@ -27,10 +18,13 @@ function html2uxml(name, h) {
 	
 	parsed = parsed.split('<body>').join(xmlheader);
 	parsed = parsed.split('</body>').join(xmlfooter);
+
 	
-	fs.writeFile('./results/' + name + '.uxml', parsed, 'utf-8', err => {
+	fs.writeFile('./results/' + name + '.uxml', formatXml(parsed), 'utf-8', err => {
 		if(err) console.log(err);
-		else console.log(name + ' UXML written ✓');
+		else {
+			console.log(name + ' UXML written ✓');
+		} 
 	});
 }
 
@@ -60,26 +54,21 @@ function convertToXML(element, $) {
 		}
 	});
 	
-	if (element.children().length > 0) {
-		xmlString += '>';
+	xmlString += '>';
 		
-		element.children().each((index, child) => {
-			const childElement = $(child);
-			xmlString += convertToXML(childElement, $);
-		});
-		
-		xmlString += `</${tagName}>`;
-	} else {
-		xmlString += ' />';
-	}
+	element.children().each((index, child) => {
+		const childElement = $(child);
+		xmlString += convertToXML(childElement, $);
+	});
 	
+	xmlString += `</${tagName}>`;	
 	
 	return xmlString;
 }
 
 function convertCss(name, data) {
 	let parsedCSS =  css.parse(data);
-	fs.writeFile('./results/' + name + '.uss', css2uss(parsedCSS.stylesheet.rules), 'utf-8', err => {
+	fs.writeFile(`${outputFolder}/` + name + '.uss', css2uss(parsedCSS.stylesheet.rules), 'utf-8', err => {
 		if(err) console.log(err);
 		else console.log(name + ' USS written ✓');
 	});
@@ -97,7 +86,7 @@ function css2uss(rules) {
 		for(let d = 0; d < rule.declarations.length; d++) {
 			let declaration = rule.declarations[d];
 			let property = transformProperty(declaration.property);
-			console.log(property);
+			//console.log(property);
 			if (uss_properties[property]) {
 				if(uss_properties[property].native == true) {
 					let value = translateValue(declaration.value, property);
@@ -140,3 +129,48 @@ function getExtras(property, value) {
 	extras += property == '-unity-font' ? '	-unity-font-definition: none;\n' : '';
 	return extras;
 }
+
+function convert(argv) {
+	console.log(argv);
+	
+	outputFolder = argv.output;
+
+	html = [];
+	for (let i = 0; i < argv.input.length; i++) {
+		let path = argv.input[i];
+		html.push({
+			name: path,
+			data: fs.readFileSync(path, 'utf8')
+		})
+	}
+
+	cssContent = [];
+	for (let i = 0; i < argv.css.length; i++) {
+		let path = argv.css[i];
+		cssContent.push({
+			name: path,
+			data: fs.readFileSync(path, 'utf8')
+		})
+	}
+
+	for(let i = 0; i < html.length; i++) {
+		html2uxml(html[i].name.split('.html').join(''), html[i].data);
+	}
+	
+	for(let i = 0; i < cssContent.length; i++) {
+		convertCss(cssContent[i].name.split('.css').join(''), cssContent[i].data);
+	}
+};
+
+function formatXml(xml, tab) { // tab = optional indent value, default is tab (\t)
+    var formatted = '', indent= '';
+    tab = tab || '\t';
+    xml.split(/>\s*</).forEach(function(node) {
+        if (node.match( /^\/\w/ )) indent = indent.substring(tab.length); // decrease indent by one 'tab'
+        formatted += indent + '<' + node + '>\r\n';
+        if (node.match( /^<?\w[^>]*[^\/]$/ )) indent += tab;              // increase indent
+    });
+    return formatted.substring(1, formatted.length-3);
+}
+
+module.exports = convert;
