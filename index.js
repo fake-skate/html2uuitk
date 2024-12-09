@@ -4,9 +4,8 @@ const fs = require('fs');
 const cheerio = require('cheerio');
 const css = require('css');
 const uss_properties = require('./uss_properties.json');
-const config = require('./config.json');
 
-let html, cssContent, outputFolder;
+let config, html, cssContent, outputFolder;
 
 let xmlheader = '<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">';
 let xmlfooter = '</ui:UXML>';
@@ -34,25 +33,30 @@ function convertToXML(element, $) {
 	
 	const tagMap = {
 		div: 'ui:VisualElement',
-		p: 'ui:Label'
+		p: 'ui:Label',
+		input: getInputType(element.get(0).attribs.type || '')
 	};
 	
 	const tagName = tagMap[element.get(0).tagName] || element.get(0).tagName;
 	
 	xmlString += `<${tagName}`;
 	
-	if(tagName == tagMap['p']) {
+	if (tagName == tagMap['p']) {
 		let text = element.first().text();
 		if(config.options.uppercase == true) text = text.toUpperCase();
 		xmlString += ' text="' + text + '"';
 	}
-	
+
 	element.each((_, elem) => {
 		const attributes = elem.attribs;
 		for (const attr in attributes) {
 			xmlString += ` ${attr}="${attributes[attr]}"`;
 		}
 	});
+
+	if (tagName == tagMap['input']) {
+		if (config?.options?.focusable != undefined) xmlString += ` focusable="${config.options.focusable}"`;
+	}
 	
 	xmlString += '>';
 		
@@ -64,6 +68,16 @@ function convertToXML(element, $) {
 	xmlString += `</${tagName}>`;	
 	
 	return xmlString;
+}
+
+const inputTypes = {
+	'': 'ui:TextField',
+	'text': 'ui:TextField',
+	'checkbox': 'ui:Toggle',
+}
+
+function getInputType(type) {
+	return inputTypes[type];
 }
 
 function convertCss(name, data) {
@@ -131,13 +145,18 @@ function getExtras(property, value) {
 }
 
 function convert(argv) {
+	config = require(argv.config);
+
 	outputFolder = argv.output;
 
 	html = [];
 	for (let i = 0; i < argv.input.length; i++) {
-		let path = argv.input[i];
+		let path = argv.input[i];		
+		let splitted = path.split('\\');
+		if (splitted.length == 1) splitted = path.split('/')
+			
 		html.push({
-			name: path,
+			name: splitted.length > 1 ? splitted[splitted.length - 1] : path,
 			data: fs.readFileSync(path, 'utf8')
 		})
 	}
@@ -145,8 +164,12 @@ function convert(argv) {
 	cssContent = [];
 	for (let i = 0; i < argv.css.length; i++) {
 		let path = argv.css[i];
+		let splitted = path.split('\\');
+		if (splitted.length == 1) splitted = path.split('/')
+
 		cssContent.push({
-			name: path,
+			name: splitted.length > 1 ? splitted[splitted.length - 1] : path,
+			originalPath: path,
 			data: fs.readFileSync(path, 'utf8')
 		})
 	}
