@@ -20,7 +20,7 @@ function html2uxml(name, h) {
 	parsed = parsed.split('</body>').join(xmlfooter);
 
 	
-	fs.writeFile('./results/' + name + '.uxml', formatXml(parsed), 'utf-8', err => {
+	fs.writeFile(`${outputFolder}/` + name + '.uxml', formatXml(parsed), 'utf-8', err => {
 		if(err) console.log(err);
 		else {
 			console.log(name + ' UXML written ✓');
@@ -131,8 +131,6 @@ function getExtras(property, value) {
 }
 
 function convert(argv) {
-	console.log(argv);
-	
 	outputFolder = argv.output;
 
 	html = [];
