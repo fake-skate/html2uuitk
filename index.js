@@ -4,12 +4,12 @@ const fs = require('fs');
 const cheerio = require('cheerio');
 const css = require('css');
 const uss_properties = require('./uss_properties.json');
+const breaking_selectors = require('./breaking_selectors.json');
 
 let config, html, cssContent, outputFolder;
 
 let xmlheader = '<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">';
 let xmlfooter = '</ui:UXML>';
-let resetAll = 'body, div, p';
 
 function html2uxml(name, h) {
 	const $ = cheerio.load(h);
@@ -17,7 +17,6 @@ function html2uxml(name, h) {
 	
 	parsed = parsed.split('<body>').join(xmlheader);
 	parsed = parsed.split('</body>').join(xmlfooter);
-
 	
 	fs.writeFile(`${outputFolder}/` + name + '.uxml', formatXml(parsed), 'utf-8', err => {
 		if(err) console.log(err);
@@ -27,24 +26,38 @@ function html2uxml(name, h) {
 	});
 }
 
+let tagMap = {
+	div: 'ui:VisualElement',
+	p: 'ui:Label',
+	input: 'ui:TextField',
+	'input[type="text"]': 'ui:TextField',
+	'input[type="checkbox"]': 'ui:Toggle',
+	'text': 'ui:Label'
+};
+
+function getElementTagName(element) {
+	let tagName = element.get(0).tagName || element.get(0).type;
+	if(tagName == "input") tagname += `[type="${element.get(0).attribs.type}"`;
+	tagName = tagMap[tagName] || tagName;
+
+	return tagName;
+}
 
 function convertToXML(element, $) {
-	let xmlString = '';
-	
-	const tagMap = {
-		div: 'ui:VisualElement',
-		p: 'ui:Label',
-		input: getInputType(element.get(0).attribs.type || '')
-	};
-	
-	const tagName = tagMap[element.get(0).tagName] || element.get(0).tagName;
+	let xmlString = '';	
+	let tagName = getElementTagName(element);
 	
 	xmlString += `<${tagName}`;
-	
-	if (tagName == tagMap['p']) {
-		let text = element.first().text();
-		if(config.options.uppercase == true) text = text.toUpperCase();
-		xmlString += ' text="' + text + '"';
+	let valid = true;
+
+	if (tagName == 'ui:Label') {
+		if (getElementTagName(element.parent()) == "ui:Label") valid = false;
+		else {
+			let text = element.first().text();
+			if (text.trim().split(" ").join("") == "") valid = false;
+			if (config.options.uppercase == true) text = text.toUpperCase();
+			xmlString += ' text="' + text + '"';
+		}
 	}
 
 	element.each((_, elem) => {
@@ -60,24 +73,16 @@ function convertToXML(element, $) {
 	
 	xmlString += '>';
 		
-	element.children().each((index, child) => {
-		const childElement = $(child);
-		xmlString += convertToXML(childElement, $);
+	element.contents().each((index, child) => {
+		if (child.type != undefined && child.type != "comment") {
+			const childElement = $(child);
+			xmlString += convertToXML(childElement, $);
+		}
 	});
 	
 	xmlString += `</${tagName}>`;	
 	
-	return xmlString;
-}
-
-const inputTypes = {
-	'': 'ui:TextField',
-	'text': 'ui:TextField',
-	'checkbox': 'ui:Toggle',
-}
-
-function getInputType(type) {
-	return inputTypes[type];
+	return valid ? xmlString : "";
 }
 
 function convertCss(name, data) {
@@ -95,23 +100,56 @@ function css2uss(rules) {
 	
 	for(let i = 0; i < rules.length; i++) {
 		let rule = rules[i];
+		let ignoreRule = false;
+
+		let additional = "";
+		for (let x = 0; x < rule.selectors.length; x++) {
+			let selector = rule.selectors[x];
+			let selectors = selector.split(" ");
+			
+			for (let i = 0; i < selectors.length; i++) {
+				let s = selectors[i];
+				if (tagMap[s]) {
+					selectors[i] = tagMap[s].split('ui:').join('');
+				}
+
+				for (let selector of breaking_selectors) {
+					if(s.split(selector).length > 1) ignoreRule = true;
+				}
+			}
+
+			selectors = selectors.join(" ");
+			rule.selectors[x] = selectors;
+		}
 		let selector = rule.selectors.join(', ');
-		result += (selector == 'body' ? ':root' : selector == resetAll ? '*' : selector) + ' {\n';
+
+		additional += (selector == 'body' ? ':root' : selector) + ' {\n';
+
+		let valid = 0;
 		for(let d = 0; d < rule.declarations.length; d++) {
 			let declaration = rule.declarations[d];
 			let property = transformProperty(declaration.property);
+
 			//console.log(property);
 			if (uss_properties[property]) {
 				if(uss_properties[property].native == true) {
 					let value = translateValue(declaration.value, property);
-					result += '    ' + property + ': ' + value + ';\n';
-					result += getExtras(property, value);
+					additional += '    ' + property + ': ' + value + ';\n';
+					additional += getExtras(property, value);
+					valid++;
 				}
 				else not_implemented[declaration.property] = true;
 			}
 			else unity_support[declaration.property] = true;
 		}
-		result += '}\n';        
+
+		
+		additional += '}\n';        
+
+		if (valid == 0 || ignoreRule) console.log("- Empty/invalid ruleset discarded: " + selector);
+		else {
+			result += additional;
+		}
 	}
 	
 	if(Object.keys(unity_support).length > 0) console.warn("- UI Toolkit doesn't support: " + Object.keys(unity_support).join(', '));
@@ -145,7 +183,7 @@ function getExtras(property, value) {
 }
 
 function convert(argv) {
-	config = require(argv.config);
+	config = require(require("path").resolve(__dirname, argv.config));
 
 	outputFolder = argv.output;
 
@@ -162,6 +200,7 @@ function convert(argv) {
 	}
 
 	cssContent = [];
+	argv.css = argv.css.concat(argv.reset)
 	for (let i = 0; i < argv.css.length; i++) {
 		let path = argv.css[i];
 		let splitted = path.split('\\');
