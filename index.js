@@ -159,6 +159,7 @@ function css2uss(rules) {
 }
 
 function translateValue(value, property) {
+	value = value.replace(/(^|\s)\.(\d)/g, '$10.$2');
 	value = value.split('vw').join('%');
 	value = value.split('vh').join('%');
 	value = property == "-unity-font" ? getAssetPath(value) : value;

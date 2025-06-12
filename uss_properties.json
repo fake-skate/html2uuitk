@@ -390,7 +390,7 @@
         "description": "The transformation origin is the point around which a transformation is applied."
     },
     "transition": {
-        "native": false,
+        "native": true,
         "inherited": false,
         "animatable": "false",
         "description": "Shorthand for transition-delay, transition-duration, transition-property, transition-timing-function"
