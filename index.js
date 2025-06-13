@@ -70,12 +70,14 @@ function convertToXML(element, $) {
 	let valid = true;
 
 	if (tagName == 'ui:Label') {
-		if (getElementTagName(element.parent()) == "ui:Label") valid = false;
+		if (getElementTagName(element.parent()) == "ui:Label" && element.get(0).tagName == undefined) { 
+			valid = false;
+		}
 		else {
 			let text = element.first().text();
 			if (text.trim().split(" ").join("") == "") valid = false;
 			if (config.options.uppercase == true) text = text.toUpperCase();
-			xmlString += ' text="' + text + '"';
+			xmlString += ' text="' + escapeXml(text) + '"';
 		}
 	}
 
@@ -251,6 +253,14 @@ function formatXml(xml, tab) { // tab = optional indent value, default is tab (\
         if (node.match( /^<?\w[^>]*[^\/]$/ )) indent += tab;              // increase indent
     });
     return formatted.substring(1, formatted.length-3);
+}
+
+function escapeXml(str) {
+  return str.replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&apos;");
 }
 
 module.exports = convert;
