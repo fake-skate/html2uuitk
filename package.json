@@ -1,6 +1,6 @@
 {
   "name": "html2uuitk",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "preferGlobal": true,
   "bin": {
     "html2uuitk": "./convert.js"
