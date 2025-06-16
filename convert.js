@@ -18,7 +18,6 @@ const argv = yargs(hideBin(process.argv))
   })
   .option('reset', {
     describe: 'Reset CSS file',
-    default: path.resolve(__dirname, 'reset.css'),
     type: 'string',
   })
   .option('c', {
@@ -30,7 +29,7 @@ const argv = yargs(hideBin(process.argv))
   .option('o', {
     alias: 'output',
     describe: 'Output folder',
-    default: path.resolve(__dirname, 'results'),
+    demandOption: true,
     type: 'string'
   })
   .help()

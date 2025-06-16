@@ -222,7 +222,10 @@ function convert(argv) {
 	}
 
 	cssContent = [];
-	argv.css = argv.css.concat(argv.reset)
+
+	const resetIsSet = process.argv.includes('--reset');
+	if (resetIsSet) argv.css = argv.css.concat(argv.reset)
+		
 	for (let i = 0; i < argv.css.length; i++) {
 		let path = argv.css[i];
 		let splitted = path.split('\\');
