@@ -23,7 +23,6 @@ const argv = yargs(hideBin(process.argv))
   .option('c', {
     alias: 'config',
     describe: 'Configuration file (JSON)',
-    default: path.resolve(__dirname, 'config.json'),
     type: 'string'
   })
   .option('o', {

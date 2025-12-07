@@ -2,6 +2,7 @@
     "assets": {
     },
     "options": {
-        "uppercase": false
+        "uppercase": false,
+        "substituteVariables": false
     }
 }

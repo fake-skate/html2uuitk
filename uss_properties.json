@@ -498,7 +498,7 @@
         "description": "Size of the 9-slice’s top edge when painting an element’s background image."
     },
     "-unity-text-align": {
-        "native": false,
+        "native": true,
         "inherited": true,
         "animatable": "discrete",
         "description": "Horizontal and vertical text alignment in the element’s box."
