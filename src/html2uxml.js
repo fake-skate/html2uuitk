@@ -1,7 +1,7 @@
 const nodePath = require('path');
 const fsp = require('fs').promises;
 const cheerio = require('cheerio');
-const { xmlheader, xmlfooter, tagMap } = require('./constants');
+const { xmlheader, xmlfooter, tagMap, uxmlSkipTags } = require('./constants');
 
 async function html2uxml(name, h, ctx) {
 	const $ = cheerio.load(h);
@@ -30,6 +30,13 @@ function getElementTagName(element) {
 
 function convertToXML(element, $, ctx) {
 	let xmlString = '';
+	const rawTag = element.get(0).tagName;
+
+	// Skip elements that have no UXML equivalent
+	if (rawTag && uxmlSkipTags.has(rawTag.toLowerCase())) {
+		return '';
+	}
+
 	let tagName = getElementTagName(element);
 
 	xmlString += `<${tagName}`;

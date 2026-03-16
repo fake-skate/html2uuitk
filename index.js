@@ -1,10 +1,10 @@
 const fs = require('fs');
 const nodePath = require('path');
 
-const { tagMap } = require('./src/constants');
+const { tagMap, htmlOnlyElements, uxmlSkipTags, cssOnlyProperties } = require('./src/constants');
 const { convertRelativeUnits, convertModernColorSyntax, splitCssTokens, isLengthToken, isColorToken } = require('./src/css-value-utils');
 const { extractCssVariables, resolveVariable, resolveValueWithVariables } = require('./src/css-variables');
-const { transformProperty, translateValue, getAssetPath, getExtras } = require('./src/css-transform');
+const { transformProperty, translateValue, expandBorderRadius, mapDisplayValue, mapOverflowValue, mapPositionValue, mapFontStyleValue, parseBackground, parseBorder, parseFont, getAssetPath, getExtras } = require('./src/css-transform');
 const { css2uss, convertCss } = require('./src/css2uss');
 const { html2uxml, formatXml, escapeXml } = require('./src/html2uxml');
 
@@ -80,8 +80,19 @@ module.exports._internal = {
 	formatXml,
 	translateValue,
 	transformProperty,
+	expandBorderRadius,
+	mapDisplayValue,
+	mapOverflowValue,
+	mapPositionValue,
+	mapFontStyleValue,
+	parseBackground,
+	parseBorder,
+	parseFont,
 	css2uss,
 	tagMap,
+	htmlOnlyElements,
+	uxmlSkipTags,
+	cssOnlyProperties,
 	getAssetPath,
 	getExtras,
 	extractCssVariables,

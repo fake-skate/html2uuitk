@@ -300,7 +300,7 @@
         "description": "Minimum width for an element, when it is flexible or measures its own size."
     },
     "opacity": {
-        "native": false,
+        "native": true,
         "inherited": false,
         "animatable": "full",
         "description": "Specifies the transparency of an element and of its children."
@@ -354,13 +354,13 @@
         "description": "Right distance from the element’s box during layout."
     },
     "rotate": {
-        "native": false,
+        "native": true,
         "inherited": false,
         "animatable": "full",
         "description": "A rotation transformation."
     },
     "scale": {
-        "native": false,
+        "native": true,
         "inherited": false,
         "animatable": "full",
         "description": "A scaling transformation."
@@ -384,7 +384,7 @@
         "description": "Top distance from the element’s box during layout."
     },
     "transform-origin": {
-        "native": false,
+        "native": true,
         "inherited": false,
         "animatable": "full",
         "description": "The transformation origin is the point around which a transformation is applied."
@@ -420,7 +420,7 @@
         "description": "Determines how intermediate values are calculated for properties modified by a transition effect."
     },
     "translate": {
-        "native": false,
+        "native": true,
         "inherited": false,
         "animatable": "full",
         "description": "A translate transformation."
