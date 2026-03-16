@@ -55,7 +55,12 @@ let tagMap = {
 
 function getElementTagName(element) {
 	let tagName = element.get(0).tagName || element.get(0).type;
-	if(tagName == "input") tagName += `[type="${element.get(0).attribs.type}"`;
+	if (tagName == "input") {
+		const inputType = element.get(0).attribs && element.get(0).attribs.type;
+		if (inputType) {
+			tagName += `[type="${inputType}"]`;
+		}
+	}
 	tagName = tagMap[tagName] || tagName;
 
 	return tagName;
@@ -270,7 +275,14 @@ function translateValue(value, property) {
 	value = value.split('vw').join('%');
 	value = value.split('vh').join('%');
 	value = property == "-unity-font" ? getAssetPath(value) : value;
-	value = property == "letter-spacing" ? (+(value.split('px')[0]) * 2).toFixed(0) + 'px' : value;
+	if (property === 'letter-spacing') {
+		const pxMatch = value.match(/^(-?\d+(?:\.\d+)?)px$/);
+		if (pxMatch) {
+			value = (parseFloat(pxMatch[1]) * 2).toFixed(0) + 'px';
+		} else {
+			console.warn(`- letter-spacing: non-px unit "${value}" passed through as-is`);
+		}
+	}
 
 	if (property == "-unity-text-align") {
 		switch(value) {
@@ -297,7 +309,11 @@ function transformProperty(property) {
 }
 
 function getAssetPath(value) {
-	if(config.assets[value]) return `url("${config.assets[value].path}")`;
+	if (config.assets && config.assets[value]) {
+		return `url("${config.assets[value].path}")`;
+	}
+	console.warn(`- Asset not mapped: ${value}`);
+	return value;
 }
 
 function getExtras(property, value) {

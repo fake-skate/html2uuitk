@@ -98,6 +98,14 @@ describe('translateValue', () => {
 	it('doubles letter-spacing px value', () => {
 		assert.strictEqual(translateValue('2px', 'letter-spacing'), '4px');
 	});
+
+	it('handles negative letter-spacing', () => {
+		assert.strictEqual(translateValue('-1px', 'letter-spacing'), '-2px');
+	});
+
+	it('passes through non-px letter-spacing as-is', () => {
+		assert.strictEqual(translateValue('0.1em', 'letter-spacing'), '0.1em');
+	});
 });
 
 // ── tagMap ──
@@ -265,7 +273,7 @@ describe('getAssetPath', () => {
 		assert.strictEqual(getAssetPath('Roboto'), 'url("Assets/Fonts/Roboto.asset")');
 	});
 
-	it('returns undefined for unmapped asset', () => {
-		assert.strictEqual(getAssetPath('UnknownFont'), undefined);
+	it('returns original value for unmapped asset', () => {
+		assert.strictEqual(getAssetPath('UnknownFont'), 'UnknownFont');
 	});
 });
