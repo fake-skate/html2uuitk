@@ -24,6 +24,7 @@ function css2uss(rules, ctx) {
 	let background_value_warnings = {};
 	let border_value_warnings = {};
 	let border_radius_warnings = {};
+	let emittedBlocks = new Set();
 
 	let cssVariables = null;
 	if (ctx.config.options && ctx.config.options.substituteVariables) {
@@ -72,7 +73,9 @@ function css2uss(rules, ctx) {
 			selectors = selectors.join(" ");
 			rule.selectors[x] = selectors;
 		}
-		let selector = rule.selectors.join(', ');
+		// Deduplicate selectors (e.g. h1,h2,h3 all map to Label → Label, Label, Label)
+		let uniqueSelectors = [...new Set(rule.selectors)];
+		let selector = uniqueSelectors.join(', ');
 
 		additional += (selector == 'body' ? ':root' : selector) + ' {\n';
 
@@ -276,7 +279,11 @@ function css2uss(rules, ctx) {
 
 		if (valid == 0 || ignoreRule) console.log("- Empty/invalid ruleset discarded: " + selector);
 		else {
-			result += additional;
+			// Deduplicate identical rule blocks
+			if (!emittedBlocks.has(additional)) {
+				emittedBlocks.add(additional);
+				result += additional;
+			}
 		}
 	}
 

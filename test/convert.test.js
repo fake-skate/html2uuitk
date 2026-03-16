@@ -675,6 +675,27 @@ describe('css2uss', () => {
 		const result = css2uss(parsed.stylesheet.rules, ctx);
 		assert.ok(result.includes('color: red'));
 	});
+
+	it('deduplicates identical rule blocks', () => {
+		const parsed = css.parse('.test { color: red; } .test { color: red; }');
+		const result = css2uss(parsed.stylesheet.rules, defaultCtx);
+		const matches = result.match(/\.test/g);
+		assert.strictEqual(matches.length, 1);
+	});
+
+	it('deduplicates redundant mapped selectors (h1,h2,h3 → Label)', () => {
+		const parsed = css.parse('h1, h2, h3 { color: red; }');
+		const result = css2uss(parsed.stylesheet.rules, defaultCtx);
+		const labelMatches = result.match(/Label/g);
+		assert.strictEqual(labelMatches.length, 1);
+	});
+
+	it('keeps non-duplicate rules', () => {
+		const parsed = css.parse('.a { color: red; } .b { color: blue; }');
+		const result = css2uss(parsed.stylesheet.rules, defaultCtx);
+		assert.ok(result.includes('.a'));
+		assert.ok(result.includes('.b'));
+	});
 });
 
 // ── getAssetPath ──
