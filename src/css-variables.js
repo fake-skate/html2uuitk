@@ -43,9 +43,13 @@ function resolveVariable(varName, cssVariables, visited = new Set()) {
 }
 
 function resolveValueWithVariables(value, cssVariables) {
-	const resolvedValue = value.replace(/var\((--[\w-]+)\)/g, (match, varName) => {
+	// Match var(--name) and var(--name, fallback)
+	const resolvedValue = value.replace(/var\((--[\w-]+)(?:\s*,\s*([^)]+))?\)/g, (match, varName, fallback) => {
 		const resolved = resolveVariable(varName, cssVariables);
 		if (resolved === undefined) {
+			if (fallback !== undefined) {
+				return fallback.trim();
+			}
 			console.warn(`Undefined CSS variable: ${varName}`);
 			return null;
 		}

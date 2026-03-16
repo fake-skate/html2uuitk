@@ -4,7 +4,7 @@ const nodePath = require('path');
 const { tagMap, htmlOnlyElements, uxmlSkipTags, cssOnlyProperties } = require('./src/constants');
 const { convertRelativeUnits, convertModernColorSyntax, splitCssTokens, isLengthToken, isColorToken } = require('./src/css-value-utils');
 const { extractCssVariables, resolveVariable, resolveValueWithVariables } = require('./src/css-variables');
-const { transformProperty, translateValue, expandBorderRadius, mapDisplayValue, mapOverflowValue, mapPositionValue, mapFontStyleValue, parseBackground, parseBorder, parseFont, getAssetPath, getExtras } = require('./src/css-transform');
+const { transformProperty, translateValue, expandBorderRadius, expandShorthand, mapDisplayValue, mapOverflowValue, mapPositionValue, mapFontStyleValue, parseBackground, parseBorder, parseFont, parseBoxShadow, mapPseudoClass, getAssetPath, getExtras } = require('./src/css-transform');
 const { css2uss, convertCss } = require('./src/css2uss');
 const { html2uxml, formatXml, escapeXml } = require('./src/html2uxml');
 
@@ -81,6 +81,7 @@ module.exports._internal = {
 	translateValue,
 	transformProperty,
 	expandBorderRadius,
+	expandShorthand,
 	mapDisplayValue,
 	mapOverflowValue,
 	mapPositionValue,
@@ -88,6 +89,8 @@ module.exports._internal = {
 	parseBackground,
 	parseBorder,
 	parseFont,
+	parseBoxShadow,
+	mapPseudoClass,
 	css2uss,
 	tagMap,
 	htmlOnlyElements,

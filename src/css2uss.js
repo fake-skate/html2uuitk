@@ -5,7 +5,7 @@ const breaking_selectors = require('../breaking_selectors.json');
 const { tagMap, htmlOnlyElements, cssOnlyProperties } = require('./constants');
 const { convertRelativeUnits, convertModernColorSyntax } = require('./css-value-utils');
 const { extractCssVariables, resolveValueWithVariables } = require('./css-variables');
-const { transformProperty, translateValue, expandBorderRadius, mapDisplayValue, mapOverflowValue, mapPositionValue, mapFontStyleValue, parseBackground, parseBorder, parseFont, getExtras } = require('./css-transform');
+const { transformProperty, translateValue, expandBorderRadius, expandShorthand, mapDisplayValue, mapOverflowValue, mapPositionValue, mapFontStyleValue, parseBackground, parseBorder, parseFont, parseBoxShadow, mapPseudoClass, getExtras } = require('./css-transform');
 
 async function convertCss(name, data, ctx) {
 	let parsedCSS = require('css').parse(data);
@@ -261,6 +261,33 @@ function css2uss(rules, ctx) {
 				}
 				mapped_value_warnings[`position:unsupported:${processedValue}`] = true;
 				continue;
+			}
+
+			// Handle margin/padding shorthand expansion
+			if ((property == 'margin' || property == 'padding') && processedValue.trim().split(/\s+/).length > 1) {
+				let expanded = expandShorthand(property, processedValue);
+				if (expanded) {
+					for (let [prop, val] of Object.entries(expanded)) {
+						if (uss_properties[prop] && uss_properties[prop].native) {
+							additional += '    ' + prop + ': ' + val + ';\n';
+							valid++;
+						}
+					}
+					continue;
+				}
+			}
+
+			// Handle box-shadow → USS shadow properties
+			if (originalProperty == 'box-shadow') {
+				let parsed = parseBoxShadow(processedValue);
+				if (parsed) {
+					additional += '    --unity-shadow-offset-x: ' + parsed.offsetX + ';\n';
+					additional += '    --unity-shadow-offset-y: ' + parsed.offsetY + ';\n';
+					additional += '    --unity-shadow-blur-radius: ' + parsed.blurRadius + ';\n';
+					additional += '    --unity-shadow-color: ' + parsed.color + ';\n';
+					valid += 4;
+					continue;
+				}
 			}
 
 			if (uss_properties[property]) {

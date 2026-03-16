@@ -15,6 +15,9 @@ const {
 	parseBackground,
 	parseBorder,
 	parseFont,
+	parseBoxShadow,
+	expandShorthand,
+	mapPseudoClass,
 	css2uss,
 	tagMap,
 	htmlOnlyElements,
@@ -577,10 +580,11 @@ describe('css2uss', () => {
 		assert.strictEqual(result, '');
 	});
 
-	it('ignores rules with :hover', () => {
+	it('preserves :hover rules (USS supports pseudo-classes)', () => {
 		const parsed = css.parse('.test:hover { color: red; }');
 		const result = css2uss(parsed.stylesheet.rules, defaultCtx);
-		assert.strictEqual(result, '');
+		assert.ok(result.includes(':hover'));
+		assert.ok(result.includes('color: red'));
 	});
 
 	it('expands background shorthand', () => {
@@ -795,4 +799,184 @@ describe('isColorToken', () => {
 	it('recognizes rgba', () => assert.strictEqual(isColorToken('rgba(0,0,0,1)'), true));
 	it('recognizes transparent', () => assert.strictEqual(isColorToken('transparent'), true));
 	it('rejects non-color tokens', () => assert.strictEqual(isColorToken('solid'), false));
+});
+
+// ── expandShorthand ──
+
+describe('expandShorthand', () => {
+	it('returns null for single value', () => {
+		assert.strictEqual(expandShorthand('margin', '10px'), null);
+	});
+
+	it('expands two values', () => {
+		const result = expandShorthand('margin', '10px 20px');
+		assert.deepStrictEqual(result, {
+			'margin-top': '10px',
+			'margin-right': '20px',
+			'margin-bottom': '10px',
+			'margin-left': '20px'
+		});
+	});
+
+	it('expands three values', () => {
+		const result = expandShorthand('padding', '10px 20px 30px');
+		assert.deepStrictEqual(result, {
+			'padding-top': '10px',
+			'padding-right': '20px',
+			'padding-bottom': '30px',
+			'padding-left': '20px'
+		});
+	});
+
+	it('expands four values', () => {
+		const result = expandShorthand('margin', '1px 2px 3px 4px');
+		assert.deepStrictEqual(result, {
+			'margin-top': '1px',
+			'margin-right': '2px',
+			'margin-bottom': '3px',
+			'margin-left': '4px'
+		});
+	});
+});
+
+// ── parseBoxShadow ──
+
+describe('parseBoxShadow', () => {
+	it('returns null for null input', () => {
+		assert.strictEqual(parseBoxShadow(null), null);
+	});
+
+	it('parses offset-x, offset-y, blur, color', () => {
+		const result = parseBoxShadow('2px 4px 6px rgba(0,0,0,0.5)');
+		assert.strictEqual(result.offsetX, '2px');
+		assert.strictEqual(result.offsetY, '4px');
+		assert.strictEqual(result.blurRadius, '6px');
+		assert.strictEqual(result.color, 'rgba(0,0,0,0.5)');
+	});
+
+	it('parses offset-x and offset-y only', () => {
+		const result = parseBoxShadow('2px 4px');
+		assert.strictEqual(result.offsetX, '2px');
+		assert.strictEqual(result.offsetY, '4px');
+		assert.strictEqual(result.blurRadius, '0');
+	});
+
+	it('returns null for single value', () => {
+		assert.strictEqual(parseBoxShadow('2px'), null);
+	});
+});
+
+// ── mapPseudoClass ──
+
+describe('mapPseudoClass', () => {
+	it('maps :hover to USS :hover', () => {
+		const result = mapPseudoClass('.btn:hover');
+		assert.strictEqual(result, '.btn:hover');
+	});
+
+	it('maps :active to USS :active', () => {
+		const result = mapPseudoClass('.btn:active');
+		assert.strictEqual(result, '.btn:active');
+	});
+
+	it('maps :focus to USS :focus', () => {
+		const result = mapPseudoClass('.input:focus');
+		assert.strictEqual(result, '.input:focus');
+	});
+
+	it('returns null for unsupported pseudo-class', () => {
+		const result = mapPseudoClass('.test:nth-child(2)');
+		assert.strictEqual(result, null);
+	});
+});
+
+// ── css2uss advanced features ──
+
+describe('css2uss advanced features', () => {
+	it('expands margin shorthand into individual properties', () => {
+		const parsed = css.parse('.test { margin: 10px 20px; }');
+		const result = css2uss(parsed.stylesheet.rules, defaultCtx);
+		assert.ok(result.includes('margin-top: 10px'));
+		assert.ok(result.includes('margin-right: 20px'));
+		assert.ok(result.includes('margin-bottom: 10px'));
+		assert.ok(result.includes('margin-left: 20px'));
+	});
+
+	it('expands padding shorthand into individual properties', () => {
+		const parsed = css.parse('.test { padding: 5px 10px 15px 20px; }');
+		const result = css2uss(parsed.stylesheet.rules, defaultCtx);
+		assert.ok(result.includes('padding-top: 5px'));
+		assert.ok(result.includes('padding-right: 10px'));
+		assert.ok(result.includes('padding-bottom: 15px'));
+		assert.ok(result.includes('padding-left: 20px'));
+	});
+
+	it('passes through single-value margin without expansion', () => {
+		const parsed = css.parse('.test { margin: 10px; }');
+		const result = css2uss(parsed.stylesheet.rules, defaultCtx);
+		assert.ok(result.includes('margin: 10px'));
+	});
+
+	it('converts box-shadow to USS shadow properties', () => {
+		const parsed = css.parse('.test { box-shadow: 2px 4px 6px rgba(0,0,0,0.5); }');
+		const result = css2uss(parsed.stylesheet.rules, defaultCtx);
+		assert.ok(result.includes('--unity-shadow-offset-x: 2px'));
+		assert.ok(result.includes('--unity-shadow-offset-y: 4px'));
+		assert.ok(result.includes('--unity-shadow-blur-radius: 6px'));
+		assert.ok(result.includes('--unity-shadow-color: rgba(0,0,0,0.5)'));
+	});
+
+	it('preserves :hover rules (USS pseudo-class support)', () => {
+		const parsed = css.parse('.btn:hover { color: red; }');
+		const result = css2uss(parsed.stylesheet.rules, defaultCtx);
+		assert.ok(result.includes(':hover'));
+		assert.ok(result.includes('color: red'));
+	});
+
+	it('preserves :active rules (USS pseudo-class support)', () => {
+		const parsed = css.parse('.btn:active { color: blue; }');
+		const result = css2uss(parsed.stylesheet.rules, defaultCtx);
+		assert.ok(result.includes(':active'));
+		assert.ok(result.includes('color: blue'));
+	});
+
+	it('preserves :focus rules (USS pseudo-class support)', () => {
+		const parsed = css.parse('.input:focus { border-color: blue; }');
+		const result = css2uss(parsed.stylesheet.rules, defaultCtx);
+		assert.ok(result.includes(':focus'));
+		assert.ok(result.includes('border-color: blue'));
+	});
+
+	it('resolves var() with fallback value', () => {
+		const ctx = { config: { assets: {}, options: { substituteVariables: true } } };
+		const parsed = css.parse('.test { color: var(--undefined-color, red); }');
+		const result = css2uss(parsed.stylesheet.rules, ctx);
+		assert.ok(result.includes('color: red'));
+	});
+
+	it('resolves var() with defined variable (ignores fallback)', () => {
+		const ctx = { config: { assets: {}, options: { substituteVariables: true } } };
+		const parsed = css.parse(':root { --my-color: blue; } .test { color: var(--my-color, red); }');
+		const result = css2uss(parsed.stylesheet.rules, ctx);
+		assert.ok(result.includes('color: blue'));
+	});
+});
+
+// ── resolveValueWithVariables fallback ──
+
+describe('resolveValueWithVariables fallback', () => {
+	it('uses fallback when variable is undefined', () => {
+		const vars = new Map();
+		assert.strictEqual(resolveValueWithVariables('var(--missing, red)', vars), 'red');
+	});
+
+	it('uses variable value when defined (ignores fallback)', () => {
+		const vars = new Map([['--color', 'blue']]);
+		assert.strictEqual(resolveValueWithVariables('var(--color, red)', vars), 'blue');
+	});
+
+	it('returns null when no fallback and variable undefined', () => {
+		const vars = new Map();
+		assert.strictEqual(resolveValueWithVariables('var(--missing)', vars), null);
+	});
 });

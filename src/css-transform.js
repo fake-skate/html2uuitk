@@ -233,6 +233,75 @@ function getAssetPath(value, ctx) {
 	return value;
 }
 
+function expandShorthand(property, value) {
+	if (!value) return null;
+	let parts = value.trim().split(/\s+/).filter(p => p.length > 0);
+	if (parts.length <= 1) return null;
+
+	let top, right, bottom, left;
+	if (parts.length == 2) {
+		top = bottom = parts[0];
+		right = left = parts[1];
+	} else if (parts.length == 3) {
+		top = parts[0];
+		right = left = parts[1];
+		bottom = parts[2];
+	} else {
+		top = parts[0];
+		right = parts[1];
+		bottom = parts[2];
+		left = parts[3];
+	}
+
+	return {
+		[`${property}-top`]: top,
+		[`${property}-right`]: right,
+		[`${property}-bottom`]: bottom,
+		[`${property}-left`]: left
+	};
+}
+
+function parseBoxShadow(value) {
+	if (!value) return null;
+	let tokens = splitCssTokens(value);
+	if (tokens.length < 2) return null;
+
+	let lengths = [];
+	let color = null;
+
+	for (let t of tokens) {
+		if (isColorToken(t)) {
+			color = t;
+		} else if (isLengthToken(t.toLowerCase())) {
+			lengths.push(t);
+		}
+	}
+
+	if (lengths.length < 2) return null;
+
+	return {
+		offsetX: lengths[0],
+		offsetY: lengths[1],
+		blurRadius: lengths[2] || '0',
+		color: color || 'rgba(0,0,0,0.5)'
+	};
+}
+
+function mapPseudoClass(selectorPart) {
+	const pseudoMap = {
+		':hover': ':hover',
+		':active': ':active',
+		':focus': ':focus'
+	};
+
+	for (let [cssPseudo, ussPseudo] of Object.entries(pseudoMap)) {
+		if (selectorPart.includes(cssPseudo)) {
+			return selectorPart.replace(cssPseudo, ussPseudo);
+		}
+	}
+	return null;
+}
+
 function getExtras(property, value) {
 	let extras = '';
 	extras += property == '-unity-font' ? '	-unity-font-definition: none;\n' : '';
@@ -243,6 +312,7 @@ module.exports = {
 	transformProperty,
 	translateValue,
 	expandBorderRadius,
+	expandShorthand,
 	mapDisplayValue,
 	mapOverflowValue,
 	mapPositionValue,
@@ -250,6 +320,8 @@ module.exports = {
 	parseBackground,
 	parseBorder,
 	parseFont,
+	parseBoxShadow,
+	mapPseudoClass,
 	getAssetPath,
 	getExtras
 };
