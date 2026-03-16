@@ -389,3 +389,22 @@ function escapeXml(str) {
 }
 
 module.exports = convert;
+
+// Export internal functions for testing
+module.exports._internal = {
+	escapeXml,
+	formatXml,
+	translateValue,
+	transformProperty,
+	css2uss,
+	tagMap,
+	getAssetPath,
+	getExtras,
+	extractCssVariables,
+	resolveVariable,
+	resolveValueWithVariables,
+	getDefaultConfig,
+	// Allow tests to set module-level config
+	setConfig: (c) => { config = c; },
+	setCssVariables: (vars) => { cssVariables = vars; }
+};

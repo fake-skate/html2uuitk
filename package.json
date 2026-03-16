@@ -12,6 +12,9 @@
     "css": "^3.0.0",
     "yargs": "^17.7.2"
   },
+  "scripts": {
+    "test": "node --test test/convert.test.js"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/fake-skate/html2uuitk.git"
