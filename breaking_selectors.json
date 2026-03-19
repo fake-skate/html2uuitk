@@ -1,3 +1,23 @@
 [
-    ":last-of-type"
+    ":last-of-type",
+    "::after",
+    "::before",
+    "::placeholder",
+    "::backdrop",
+    "::-webkit-",
+    ":-moz-",
+    ":host",
+    ":where(",
+    ":not(",
+    ":disabled",
+    ":checked",
+    ":first-child",
+    ":last-child",
+    ":nth-child",
+    ":first-of-type",
+    "[type=",
+    "[role=",
+    "[hidden]",
+    "[title]",
+    "~"
 ]

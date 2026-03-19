@@ -34,4 +34,7 @@ const argv = yargs(hideBin(process.argv))
   .help()
   .argv;
 
-require('./index.js')(argv);
+require('./index.js')(argv).catch(err => {
+  console.error(err);
+  process.exit(1);
+});
