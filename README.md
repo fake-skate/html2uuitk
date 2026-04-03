@@ -2,6 +2,8 @@
 
 Converts HTML + CSS layouts into Unity UI Toolkit USS and UXML.
 
+**[Try the online demo](https://fake-skate.github.io/html2uuitk/)**
+
 ## Installation
 
 ```bash
