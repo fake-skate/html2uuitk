@@ -1,5 +1,3 @@
-const nodePath = require('path');
-const fsp = require('fs').promises;
 const uss_properties = require('../uss_properties.json');
 const breaking_selectors = require('../breaking_selectors.json');
 const { tagMap, htmlOnlyElements, cssOnlyProperties } = require('./constants');
@@ -7,12 +5,19 @@ const { convertRelativeUnits, convertModernColorSyntax } = require('./css-value-
 const { extractCssVariables, resolveValueWithVariables } = require('./css-variables');
 const { transformProperty, translateValue, expandBorderRadius, expandShorthand, mapDisplayValue, mapOverflowValue, mapPositionValue, mapFontStyleValue, parseBackground, parseBorder, parseFont, parseBoxShadow, mapPseudoClass, getExtras } = require('./css-transform');
 
-async function convertCss(name, data, ctx) {
+function convertCss(name, data, ctx) {
 	let parsedCSS = require('css').parse(data);
-	const ussContent = css2uss(parsedCSS.stylesheet.rules, ctx);
+	return css2uss(parsedCSS.stylesheet.rules, ctx);
+}
+
+async function convertCssFile(name, data, ctx) {
+	const nodePath = require('path');
+	const fsp = require('fs').promises;
+	const ussContent = convertCss(name, data, ctx);
 	const outputPath = nodePath.join(ctx.outputFolder, name + '.uss');
 	await fsp.writeFile(outputPath, ussContent, 'utf-8');
 	console.log(name + ' USS written.');
+	return ussContent;
 }
 
 function css2uss(rules, ctx) {
@@ -327,5 +332,6 @@ function css2uss(rules, ctx) {
 
 module.exports = {
 	convertCss,
+	convertCssFile,
 	css2uss
 };

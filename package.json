@@ -1,6 +1,6 @@
 {
   "name": "html2uuitk",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "preferGlobal": true,
   "bin": {
     "html2uuitk": "./convert.js"
@@ -13,10 +13,14 @@
     "yargs": "^17.7.2"
   },
   "scripts": {
-    "test": "node --test test/convert.test.js"
+    "test": "node --test test/convert.test.js",
+    "build:browser": "node build-browser.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/fake-skate/html2uuitk.git"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.0"
   }
 }

@@ -1,18 +1,24 @@
-const nodePath = require('path');
-const fsp = require('fs').promises;
 const cheerio = require('cheerio');
 const { xmlheader, xmlfooter, tagMap, uxmlSkipTags } = require('./constants');
 
-async function html2uxml(name, h, ctx) {
+function html2uxml(name, h, ctx) {
 	const $ = cheerio.load(h);
 	let parsed = convertToXML($('body'), $, ctx);
 
 	parsed = parsed.split('<body>').join(xmlheader);
 	parsed = parsed.split('</body>').join(xmlfooter);
 
+	return formatXml(parsed);
+}
+
+async function html2uxmlFile(name, h, ctx) {
+	const nodePath = require('path');
+	const fsp = require('fs').promises;
+	const result = html2uxml(name, h, ctx);
 	const outputPath = nodePath.join(ctx.outputFolder, name + '.uxml');
-	await fsp.writeFile(outputPath, formatXml(parsed), 'utf-8');
+	await fsp.writeFile(outputPath, result, 'utf-8');
 	console.log(name + ' UXML written.');
+	return result;
 }
 
 function getElementTagName(element) {
@@ -100,6 +106,7 @@ function escapeXml(str) {
 
 module.exports = {
 	html2uxml,
+	html2uxmlFile,
 	formatXml,
 	escapeXml
 };

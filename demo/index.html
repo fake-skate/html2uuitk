@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<title>html2uuitk - HTML/CSS to Unity UI Toolkit Converter</title>
+<style>
+	*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+	html, body {
+		height: 100%;
+		overflow: hidden;
+	}
+
+	body {
+		font-family: "Space Grotesk", -apple-system, BlinkMacSystemFont, sans-serif;
+		background: #121212;
+		color: #e0e0e0;
+		display: flex;
+		flex-direction: column;
+	}
+
+	header {
+		padding: 1rem 2rem;
+		background: #1a1a1a;
+		border-bottom: 1px solid #2a2a2a;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		flex-wrap: wrap;
+		gap: 1rem;
+	}
+
+	header h1 {
+		font-size: 1.25rem;
+		font-weight: 600;
+		color: #F06B1E;
+	}
+
+	header h1 span { color: #777; font-weight: 400; font-size: 0.85rem; }
+
+	.controls {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		flex-wrap: wrap;
+	}
+
+	.controls label {
+		display: flex;
+		align-items: center;
+		gap: 0.4rem;
+		font-size: 0.85rem;
+		cursor: pointer;
+	}
+
+	.controls input[type="checkbox"] {
+		appearance: none;
+		-webkit-appearance: none;
+		width: 16px;
+		height: 16px;
+		border: 1px solid #2a2a2a;
+		border-radius: 3px;
+		background: #0a0a0a;
+		cursor: pointer;
+		position: relative;
+		transition: all 0.15s;
+	}
+
+	.controls input[type="checkbox"]:hover {
+		border-color: #F06B1E;
+	}
+
+	.controls input[type="checkbox"]:checked {
+		background: #F06B1E;
+		border-color: #F06B1E;
+	}
+
+	.controls input[type="checkbox"]:checked::after {
+		content: '';
+		position: absolute;
+		left: 4px;
+		top: 1px;
+		width: 5px;
+		height: 9px;
+		border: solid #fff;
+		border-width: 0 2px 2px 0;
+		transform: rotate(45deg);
+	}
+
+	.controls select {
+		font-family: inherit;
+		background: #121212;
+		color: #e0e0e0;
+		border: 1px solid #2a2a2a;
+		border-radius: 4px;
+		padding: 0.3rem 0.5rem;
+		font-size: 0.85rem;
+		transition: border-color 0.15s;
+	}
+
+	.controls select:hover { border-color: #444; }
+	.controls select:focus { border-color: #F06B1E; outline: none; }
+
+	button {
+		font-family: inherit;
+		background: #F06B1E;
+		color: #fff;
+		border: none;
+		border-radius: 4px;
+		padding: 0.5rem 1.25rem;
+		font-size: 0.9rem;
+		font-weight: 600;
+		cursor: pointer;
+		transition: background 0.15s, transform 0.1s;
+	}
+
+	button:hover { background: #D45E18; }
+	button:active { background: #B85014; transform: scale(0.97); }
+
+	.btn-secondary {
+		background: transparent;
+		border: 1px solid #2a2a2a;
+		color: #777;
+		padding: 0.3rem 0.6rem;
+		font-size: 0.75rem;
+		font-weight: 400;
+		transition: all 0.15s;
+	}
+	.btn-secondary:hover { background: #1a1a1a; color: #e0e0e0; border-color: #444; }
+
+	main {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		grid-template-rows: 1fr auto auto auto;
+		flex: 1;
+		min-height: 0;
+		overflow: hidden;
+	}
+
+	.panel {
+		display: flex;
+		flex-direction: column;
+		border-right: 1px solid #2a2a2a;
+		min-height: 0;
+	}
+
+	.panel:last-child { border-right: none; }
+
+	.panel-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: 0.5rem 1rem;
+		background: #1a1a1a;
+		border-bottom: 1px solid #2a2a2a;
+		font-size: 0.8rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		color: #777;
+	}
+
+	.panel-header .header-actions {
+		display: flex;
+		gap: 0.4rem;
+	}
+
+	.panel-body {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		min-height: 0;
+	}
+
+	.panel-body textarea {
+		flex: 1;
+		background: #0a0a0a;
+		color: #ccc;
+		border: none;
+		padding: 1rem;
+		font-family: "Cascadia Code", "Fira Code", "JetBrains Mono", monospace;
+		font-size: 0.85rem;
+		line-height: 1.5;
+		resize: none;
+		outline: none;
+		tab-size: 4;
+	}
+
+	.panel-body textarea {
+		transition: background 0.2s;
+	}
+
+	.panel-body textarea:focus {
+		background: #111111;
+	}
+
+	.panel-body textarea[readonly] {
+		color: #F0A868;
+		cursor: default;
+	}
+
+	.input-split {
+		display: flex;
+		flex-direction: column;
+		flex: 1;
+		min-height: 0;
+	}
+
+	.input-split .sub-panel {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		min-height: 0;
+	}
+
+	.input-split .sub-panel + .sub-panel {
+		border-top: 1px solid #2a2a2a;
+	}
+
+	.output-split {
+		display: flex;
+		flex-direction: column;
+		flex: 1;
+		min-height: 0;
+	}
+
+	.output-split .sub-panel {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		min-height: 0;
+	}
+
+	.output-split .sub-panel + .sub-panel {
+		border-top: 1px solid #2a2a2a;
+	}
+
+	.warnings-bar {
+		grid-column: 1 / -1;
+		background: #1a1a1a;
+		border-top: 1px solid #2a2a2a;
+		max-height: 150px;
+		overflow-y: auto;
+		padding: 0.5rem 1rem;
+		font-family: monospace;
+		font-size: 0.78rem;
+		color: #F0A868;
+		line-height: 1.6;
+	}
+
+	.warnings-bar:empty { display: none; }
+	.warnings-bar .warn-label { color: #777; font-weight: 600; margin-right: 0.5rem; }
+
+	.config-section {
+		grid-column: 1 / -1;
+		background: #111111;
+		border-top: 1px solid #2a2a2a;
+		display: flex;
+		flex-direction: column;
+		max-height: 0;
+		overflow: hidden;
+		transition: max-height 0.3s ease;
+	}
+
+	.config-section.visible { max-height: 300px; }
+
+	.config-header {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		padding: 0.5rem 1rem;
+		background: #1a1a1a;
+		border-bottom: 1px solid #2a2a2a;
+		font-size: 0.8rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		color: #777;
+	}
+
+	.config-body {
+		display: flex;
+		gap: 2rem;
+		padding: 1rem;
+		flex-wrap: wrap;
+	}
+
+	.config-group {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.config-group-title {
+		font-size: 0.75rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		color: #777;
+		margin-bottom: 0.25rem;
+	}
+
+	.config-group label {
+		display: flex;
+		align-items: center;
+		gap: 0.4rem;
+		font-size: 0.82rem;
+		cursor: pointer;
+	}
+
+	.config-group select {
+		font-family: inherit;
+		background: #0a0a0a;
+		color: #e0e0e0;
+		border: 1px solid #2a2a2a;
+		border-radius: 4px;
+		padding: 0.3rem 0.5rem;
+		font-size: 0.82rem;
+	}
+
+	.font-entries { display: flex; flex-direction: column; gap: 0.4rem; }
+
+	.font-entry {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
+	.font-entry input {
+		background: #0a0a0a;
+		color: #ccc;
+		border: 1px solid #2a2a2a;
+		border-radius: 4px;
+		padding: 0.35rem 0.5rem;
+		font-family: "Cascadia Code", "Fira Code", "JetBrains Mono", monospace;
+		font-size: 0.8rem;
+		outline: none;
+		transition: border-color 0.15s, background 0.15s;
+	}
+
+	.font-entry input:hover { border-color: #444; }
+	.font-entry input:focus { border-color: #F06B1E; background: #111111; }
+
+	.font-entry input.font-name { width: 140px; }
+	.font-entry input.font-path { width: 320px; }
+
+	.font-entry .btn-remove {
+		background: transparent;
+		border: 1px solid #333;
+		color: #666;
+		padding: 0.2rem 0.45rem;
+		font-size: 0.7rem;
+		line-height: 1;
+	}
+
+	.font-entry .btn-remove { transition: all 0.15s; }
+	.font-entry .btn-remove:hover { color: #F06B1E; border-color: #F06B1E; }
+
+	.btn-add-font {
+		background: transparent;
+		border: 1px dashed #2a2a2a;
+		color: #666;
+		padding: 0.3rem 0.6rem;
+		font-size: 0.75rem;
+		font-weight: 400;
+		align-self: flex-start;
+	}
+
+	.btn-add-font { transition: all 0.15s; }
+	.btn-add-font:hover { color: #e0e0e0; border-color: #F06B1E; }
+
+	.preview-section {
+		grid-column: 1 / -1;
+		background: #111111;
+		border-top: 1px solid #2a2a2a;
+		display: flex;
+		flex-direction: column;
+		min-height: 0;
+		max-height: 0;
+		overflow: hidden;
+		transition: max-height 0.3s ease;
+	}
+
+	.preview-section.visible { max-height: 500px; }
+
+	.preview-header {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		padding: 0.5rem 1rem;
+		background: #1a1a1a;
+		border-bottom: 1px solid #2a2a2a;
+		font-size: 0.8rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		color: #777;
+	}
+
+	.preview-header .device-btn {
+		background: transparent;
+		border: 1px solid #2a2a2a;
+		color: #777;
+		padding: 0.25rem 0.6rem;
+		font-size: 0.75rem;
+		font-weight: 400;
+		text-transform: none;
+		letter-spacing: 0;
+	}
+
+	.preview-header .device-btn:hover { background: #1a1a1a; color: #e0e0e0; border-color: #444; }
+	.preview-header .device-btn.active { background: #F06B1E; border-color: #F06B1E; color: #fff; }
+
+	.preview-header .preview-size {
+		color: #555;
+		font-size: 0.7rem;
+		font-weight: 400;
+		text-transform: none;
+		letter-spacing: 0;
+		margin-left: auto;
+	}
+
+	.preview-body {
+		flex: 1;
+		display: flex;
+		justify-content: center;
+		align-items: flex-start;
+		padding: 1rem;
+		overflow: auto;
+		min-height: 200px;
+		max-height: 350px;
+	}
+
+	.preview-body iframe {
+		border: 1px solid #2a2a2a;
+		background: #fff;
+		height: 100%;
+		min-height: 180px;
+		transition: width 0.25s ease;
+	}
+
+	@media (max-width: 800px) {
+		main { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr auto; }
+	}
+</style>
+</head>
+<body>
+<header>
+	<h1>html2uuitk <span>HTML/CSS &rarr; Unity UI Toolkit</span></h1>
+	<div class="controls">
+		<label>
+			<input type="checkbox" id="opt-uppercase"> Uppercase labels
+		</label>
+		<label>
+			<input type="checkbox" id="opt-subvars"> Substitute CSS variables
+		</label>
+		<label>
+			Example:
+			<select id="examples">
+				<option value="">-- select --</option>
+				<option value="basic">Basic layout</option>
+				<option value="form">Form elements</option>
+				<option value="card">Card component</option>
+			</select>
+		</label>
+		<button class="btn-secondary" id="btn-config" style="font-size:0.85rem;padding:0.4rem 0.8rem;">Config</button>
+		<button class="btn-secondary" id="btn-preview" style="font-size:0.85rem;padding:0.4rem 0.8rem;">Preview</button>
+		<button class="btn-secondary" id="btn-download-all" style="font-size:0.85rem;padding:0.4rem 0.8rem;">Download All</button>
+		<button id="btn-convert">Convert</button>
+	</div>
+</header>
+<main>
+	<div class="panel">
+		<div class="input-split">
+			<div class="sub-panel">
+				<div class="panel-header">HTML Input</div>
+				<div class="panel-body">
+					<textarea id="html-input" spellcheck="false" placeholder="Paste your HTML here..."></textarea>
+				</div>
+			</div>
+			<div class="sub-panel">
+				<div class="panel-header">CSS Input</div>
+				<div class="panel-body">
+					<textarea id="css-input" spellcheck="false" placeholder="Paste your CSS here..."></textarea>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="panel">
+		<div class="output-split">
+			<div class="sub-panel">
+				<div class="panel-header">
+					UXML Output
+					<span class="header-actions">
+						<button class="btn-secondary" onclick="copyOutput('uxml-output')">Copy</button>
+						<button class="btn-secondary" onclick="downloadOutput('uxml-output', 'output.uxml')">Download</button>
+					</span>
+				</div>
+				<div class="panel-body">
+					<textarea id="uxml-output" readonly placeholder="UXML output will appear here..."></textarea>
+				</div>
+			</div>
+			<div class="sub-panel">
+				<div class="panel-header">
+					USS Output
+					<span class="header-actions">
+						<button class="btn-secondary" onclick="copyOutput('uss-output')">Copy</button>
+						<button class="btn-secondary" onclick="downloadOutput('uss-output', 'output.uss')">Download</button>
+					</span>
+				</div>
+				<div class="panel-body">
+					<textarea id="uss-output" readonly placeholder="USS output will appear here..."></textarea>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="config-section" id="config-section">
+		<div class="config-header">Configuration</div>
+		<div class="config-body">
+			<div class="config-group">
+				<div class="config-group-title">Options</div>
+				<label>
+					Focusable inputs:
+					<select id="opt-focusable">
+						<option value="">Default (unset)</option>
+						<option value="true">true</option>
+						<option value="false">false</option>
+					</select>
+				</label>
+			</div>
+			<div class="config-group" style="flex:1;min-width:300px;">
+				<div class="config-group-title">Font Asset Mappings</div>
+				<div class="font-entries" id="font-entries">
+					<div class="font-entry">
+						<input type="text" class="font-name" placeholder="CSS font name" />
+						<input type="text" class="font-path" placeholder="Assets/Fonts/FontName-Regular.asset" />
+						<button class="btn-remove btn-secondary" title="Remove">x</button>
+					</div>
+				</div>
+				<button class="btn-add-font" id="btn-add-font">+ Add font mapping</button>
+			</div>
+		</div>
+	</div>
+	<div class="preview-section" id="preview-section">
+		<div class="preview-header">
+			Preview
+			<button class="device-btn active" data-device="desktop">Desktop</button>
+			<button class="device-btn" data-device="tablet">Tablet</button>
+			<button class="device-btn" data-device="mobile">Mobile</button>
+			<span class="preview-size" id="preview-size">1280px</span>
+		</div>
+		<div class="preview-body">
+			<iframe id="preview-frame" sandbox="allow-same-origin"></iframe>
+		</div>
+	</div>
+	<div class="warnings-bar" id="warnings"></div>
+</main>
+
+<script src="html2uuitk.js"></script>
+<script>
+const examples = {
+	basic: {
+		html: '<body>\n\t<div class="container">\n\t\t<h1>Hello World</h1>\n\t\t<p>Welcome to Unity UI Toolkit</p>\n\t\t<div class="row">\n\t\t\t<div class="col">Column 1</div>\n\t\t\t<div class="col">Column 2</div>\n\t\t</div>\n\t</div>\n</body>',
+		css: '.container {\n\twidth: 100%;\n\tpadding: 20px;\n\tbackground-color: #1a1a2e;\n}\n\nh1 {\n\tfont-size: 24px;\n\tcolor: #e94560;\n\tmargin-bottom: 10px;\n}\n\np {\n\tcolor: #cccccc;\n\tmargin-bottom: 20px;\n}\n\n.row {\n\tdisplay: flex;\n\tflex-direction: row;\n}\n\n.col {\n\tflex: 1;\n\tpadding: 10px;\n\tbackground-color: #16213e;\n\tmargin: 5px;\n\tborder-radius: 4px;\n}'
+	},
+	form: {
+		html: '<body>\n\t<div class="form">\n\t\t<label>Username</label>\n\t\t<input type="text" class="input-field" />\n\t\t<label>Password</label>\n\t\t<input type="text" class="input-field" />\n\t\t<div class="actions">\n\t\t\t<button class="btn-primary">Login</button>\n\t\t\t<button class="btn-secondary">Cancel</button>\n\t\t</div>\n\t</div>\n</body>',
+		css: '.form {\n\twidth: 300px;\n\tpadding: 20px;\n\tbackground-color: #222;\n\tborder-radius: 8px;\n}\n\nlabel {\n\tcolor: #aaa;\n\tfont-size: 12px;\n\tmargin-bottom: 4px;\n}\n\n.input-field {\n\theight: 36px;\n\tpadding: 0 10px;\n\tbackground-color: #333;\n\tborder-radius: 4px;\n\tcolor: #fff;\n\tmargin-bottom: 12px;\n\tborder: 1px solid #555;\n}\n\n.actions {\n\tdisplay: flex;\n\tflex-direction: row;\n\tjustify-content: flex-end;\n\tmargin-top: 10px;\n}\n\n.btn-primary {\n\tbackground-color: #e94560;\n\tcolor: #fff;\n\tpadding: 8px 16px;\n\tborder-radius: 4px;\n\tmargin-left: 8px;\n}\n\n.btn-secondary {\n\tbackground-color: transparent;\n\tcolor: #999;\n\tpadding: 8px 16px;\n\tborder: 1px solid #555;\n\tborder-radius: 4px;\n}'
+	},
+	card: {
+		html: '<body>\n\t<div class="card">\n\t\t<div class="card-header">\n\t\t\t<h2>Player Stats</h2>\n\t\t</div>\n\t\t<div class="card-body">\n\t\t\t<div class="stat-row">\n\t\t\t\t<span class="stat-label">Health</span>\n\t\t\t\t<span class="stat-value">100</span>\n\t\t\t</div>\n\t\t\t<div class="stat-row">\n\t\t\t\t<span class="stat-label">Attack</span>\n\t\t\t\t<span class="stat-value">45</span>\n\t\t\t</div>\n\t\t\t<div class="stat-row">\n\t\t\t\t<span class="stat-label">Defense</span>\n\t\t\t\t<span class="stat-value">30</span>\n\t\t\t</div>\n\t\t</div>\n\t</div>\n</body>',
+		css: '.card {\n\twidth: 280px;\n\tbackground-color: #16213e;\n\tborder-radius: 8px;\n\toverflow: hidden;\n\tborder: 1px solid #0f3460;\n}\n\n.card-header {\n\tpadding: 16px;\n\tbackground-color: #0f3460;\n}\n\nh2 {\n\tcolor: #e94560;\n\tfont-size: 18px;\n}\n\n.card-body {\n\tpadding: 16px;\n}\n\n.stat-row {\n\tdisplay: flex;\n\tflex-direction: row;\n\tjustify-content: space-between;\n\tpadding: 8px 0;\n\tborder-bottom: 1px solid #0f3460;\n}\n\n.stat-row:last-child {\n\tborder-bottom: none;\n}\n\n.stat-label {\n\tcolor: #888;\n\tfont-size: 14px;\n}\n\n.stat-value {\n\tcolor: #e0e0e0;\n\tfont-size: 14px;\n\tfont-weight: bold;\n}'
+	}
+};
+
+function convert() {
+	const htmlInput = document.getElementById('html-input').value;
+	const cssInput = document.getElementById('css-input').value;
+
+	const config = buildConfig();
+
+	try {
+		const result = html2uuitk.convert(htmlInput, cssInput, config);
+		document.getElementById('uxml-output').value = result.uxml || '';
+		document.getElementById('uss-output').value = result.uss || '';
+
+		const warningsEl = document.getElementById('warnings');
+		if (result.warnings && result.warnings.length > 0) {
+			warningsEl.innerHTML = '<span class="warn-label">Warnings:</span>' +
+				result.warnings.map(function(w) { return w.replace(/^- /, ''); }).join('<br>');
+		} else {
+			warningsEl.innerHTML = '';
+		}
+	} catch (err) {
+		document.getElementById('warnings').innerHTML =
+			'<span class="warn-label">Error:</span> ' + err.message;
+	}
+	updatePreview();
+}
+
+function copyOutput(id) {
+	const textarea = document.getElementById(id);
+	navigator.clipboard.writeText(textarea.value).then(function() {
+		const btn = textarea.closest('.sub-panel').querySelector('.btn-secondary');
+		const orig = btn.textContent;
+		btn.textContent = 'Copied!';
+		setTimeout(function() { btn.textContent = orig; }, 1500);
+	});
+}
+
+function downloadFile(filename, content) {
+	if (!content) return;
+	var blob = new Blob([content], { type: 'text/plain' });
+	var url = URL.createObjectURL(blob);
+	var a = document.createElement('a');
+	a.href = url;
+	a.download = filename;
+	a.click();
+	URL.revokeObjectURL(url);
+}
+
+function downloadOutput(id, filename) {
+	var content = document.getElementById(id).value;
+	downloadFile(filename, content);
+}
+
+function downloadAll() {
+	var uxml = document.getElementById('uxml-output').value;
+	var uss = document.getElementById('uss-output').value;
+	if (!uxml && !uss) return;
+	downloadFile('output.uxml', uxml);
+	setTimeout(function() { downloadFile('output.uss', uss); }, 100);
+}
+
+document.getElementById('btn-convert').addEventListener('click', convert);
+document.getElementById('btn-download-all').addEventListener('click', downloadAll);
+
+document.addEventListener('keydown', function(e) {
+	if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+		e.preventDefault();
+		convert();
+	}
+});
+
+document.getElementById('examples').addEventListener('change', function() {
+	const ex = examples[this.value];
+	if (ex) {
+		document.getElementById('html-input').value = ex.html;
+		document.getElementById('css-input').value = ex.css;
+		convert();
+	}
+});
+
+// Config
+function buildConfig() {
+	var assets = {};
+	document.querySelectorAll('.font-entry').forEach(function(entry) {
+		var name = entry.querySelector('.font-name').value.trim();
+		var path = entry.querySelector('.font-path').value.trim();
+		if (name && path) assets[name] = { path: path };
+	});
+	var focusableVal = document.getElementById('opt-focusable').value;
+	var options = {
+		uppercase: document.getElementById('opt-uppercase').checked,
+		substituteVariables: document.getElementById('opt-subvars').checked
+	};
+	if (focusableVal !== '') options.focusable = focusableVal === 'true';
+	return { assets: assets, options: options };
+}
+
+function addFontEntry() {
+	var container = document.getElementById('font-entries');
+	var entry = document.createElement('div');
+	entry.className = 'font-entry';
+	entry.innerHTML =
+		'<input type="text" class="font-name" placeholder="CSS font name" />' +
+		'<input type="text" class="font-path" placeholder="Assets/Fonts/FontName-Regular.asset" />' +
+		'<button class="btn-remove btn-secondary" title="Remove">x</button>';
+	container.appendChild(entry);
+}
+
+document.getElementById('btn-add-font').addEventListener('click', addFontEntry);
+
+document.getElementById('font-entries').addEventListener('click', function(e) {
+	if (e.target.classList.contains('btn-remove')) {
+		var entry = e.target.closest('.font-entry');
+		var entries = document.querySelectorAll('.font-entry');
+		if (entries.length > 1) {
+			entry.remove();
+		} else {
+			entry.querySelector('.font-name').value = '';
+			entry.querySelector('.font-path').value = '';
+		}
+	}
+});
+
+document.getElementById('btn-config').addEventListener('click', function() {
+	var section = document.getElementById('config-section');
+	var visible = section.classList.toggle('visible');
+	this.textContent = visible ? 'Hide Config' : 'Config';
+});
+
+// Preview
+var deviceWidths = { desktop: 1280, tablet: 768, mobile: 375 };
+var currentDevice = 'desktop';
+
+function updatePreview() {
+	var section = document.getElementById('preview-section');
+	if (!section.classList.contains('visible')) return;
+	var frame = document.getElementById('preview-frame');
+	var html = document.getElementById('html-input').value;
+	var css = document.getElementById('css-input').value;
+	var width = deviceWidths[currentDevice];
+	frame.style.width = width + 'px';
+	document.getElementById('preview-size').textContent = width + 'px';
+	var doc = '<!DOCTYPE html><html><head><meta charset="UTF-8"><style>' + css + '</style></head>' + html + '</html>';
+	frame.srcdoc = doc;
+}
+
+document.getElementById('btn-preview').addEventListener('click', function() {
+	var section = document.getElementById('preview-section');
+	var visible = section.classList.toggle('visible');
+	this.textContent = visible ? 'Hide Preview' : 'Preview';
+	if (visible) updatePreview();
+});
+
+document.querySelectorAll('.device-btn').forEach(function(btn) {
+	btn.addEventListener('click', function() {
+		document.querySelectorAll('.device-btn').forEach(function(b) { b.classList.remove('active'); });
+		btn.classList.add('active');
+		currentDevice = btn.dataset.device;
+		updatePreview();
+	});
+});
+</script>
+</body>
+</html>
