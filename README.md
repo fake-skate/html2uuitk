@@ -144,6 +144,8 @@ The config file is optional. All options have sensible defaults.
 | `uppercase` | boolean | `false` | Convert text content to uppercase in UXML |
 | `substituteVariables` | boolean | `false` | Replace `var()` references with resolved values |
 | `focusable` | boolean | — | Set `focusable` attribute on input elements |
+| `dataAttributes` | boolean | `true` | Write `data-key="value"` attributes as `data-key:value` classes (UXML drops unknown attributes) |
+| `styleLinks` | boolean | `true` | Write a `<Style src="name.uss" />` for each `<link rel="stylesheet">` in the HTML, in order |
 | `assets` | object | `{}` | Map font names to Unity asset paths |
 
 ### Asset Mapping
