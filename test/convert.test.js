@@ -32,7 +32,8 @@ const {
 	convertModernColorSyntax,
 	splitCssTokens,
 	isLengthToken,
-	isColorToken
+	isColorToken,
+	html2uxml
 } = require('../index.js')._internal;
 
 const defaultCtx = { config: { assets: {}, options: {} } };
@@ -978,5 +979,52 @@ describe('resolveValueWithVariables fallback', () => {
 	it('returns null when no fallback and variable undefined', () => {
 		const vars = new Map();
 		assert.strictEqual(resolveValueWithVariables('var(--missing)', vars), null);
+	});
+});
+
+
+// ── html2uxml: data attributes and style links ──
+
+describe('html2uxml data attributes', () => {
+	const html = '<html><head></head><body><div class="slider indexable" data-bind="bodySize" data-min="-4" data-max="4"></div></body></html>';
+
+	it('turns data-* attributes into data-key:value classes', () => {
+		const out = html2uxml('t', html, defaultCtx);
+		assert.ok(out.includes('class="slider indexable data-bind:bodySize data-min:-4 data-max:4"'), out);
+		assert.ok(!out.includes('data-bind="'), out);
+	});
+
+	it('adds a class attribute when the element had none', () => {
+		const out = html2uxml('t', '<body><div data-action="close"></div></body>', defaultCtx);
+		assert.ok(out.includes('class="data-action:close"'), out);
+	});
+
+	it('keeps data-* attributes as-is when disabled', () => {
+		const ctx = { config: { assets: {}, options: { dataAttributes: false } } };
+		const out = html2uxml('t', html, ctx);
+		assert.ok(out.includes('data-bind="bodySize"'), out);
+	});
+});
+
+describe('html2uxml style links', () => {
+	const html = '<html><head><link rel="stylesheet" href="./reset.css"><link rel="stylesheet" href="css/menu.css"></head><body><div></div></body></html>';
+
+	it('writes one <Style> per stylesheet link, in order', () => {
+		const out = html2uxml('t', html, defaultCtx);
+		const a = out.indexOf('<Style src="reset.uss" />');
+		const b = out.indexOf('<Style src="menu.uss" />');
+		assert.ok(a > 0 && b > a, out);
+	});
+
+	it('skips links that are not among the converted css files', () => {
+		const ctx = { config: { assets: {}, options: {} }, cssNames: ['menu'] };
+		const out = html2uxml('t', html, ctx);
+		assert.ok(!out.includes('reset.uss'), out);
+		assert.ok(out.includes('menu.uss'), out);
+	});
+
+	it('writes no <Style> when disabled', () => {
+		const ctx = { config: { assets: {}, options: { styleLinks: false } } };
+		assert.ok(!html2uxml('t', html, ctx).includes('<Style'));
 	});
 });

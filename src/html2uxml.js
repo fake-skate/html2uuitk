@@ -5,7 +5,7 @@ function html2uxml(name, h, ctx) {
 	const $ = cheerio.load(h);
 	let parsed = convertToXML($('body'), $, ctx);
 
-	parsed = parsed.split('<body>').join(xmlheader);
+	parsed = parsed.split('<body>').join(xmlheader + styleLinks($, ctx));
 	parsed = parsed.split('</body>').join(xmlfooter);
 
 	return formatXml(parsed);
@@ -61,7 +61,7 @@ function convertToXML(element, $, ctx) {
 	}
 
 	element.each((_, elem) => {
-		const attributes = elem.attribs;
+		const attributes = dataAttributesToClasses(elem.attribs, ctx);
 		for (const attr in attributes) {
 			xmlString += ` ${attr}="${attributes[attr]}"`;
 		}
@@ -85,6 +85,47 @@ function convertToXML(element, $, ctx) {
 	return valid ? xmlString : "";
 }
 
+// UXML drops attributes it does not know, so data-* attributes would be lost.
+// Carry them as "data-key:value" classes instead (read back at runtime from the class list).
+function dataAttributesToClasses(attributes, ctx) {
+	if (!attributes || ctx.config?.options?.dataAttributes === false) return attributes;
+
+	const result = {};
+	const dataClasses = [];
+	for (const attr in attributes) {
+		if (!attr.startsWith('data-')) {
+			result[attr] = attributes[attr];
+			continue;
+		}
+		const value = String(attributes[attr]).trim();
+		if (/\s/.test(value)) console.warn(`${attr}="${value}" has whitespace; it cannot be a class, spaces became "_".`);
+		dataClasses.push(value === '' ? attr : `${attr}:${value.replace(/\s+/g, '_')}`);
+	}
+	if (dataClasses.length === 0) return result;
+
+	const classes = (result['class'] || '').split(/\s+/).filter(Boolean).concat(dataClasses);
+	result['class'] = classes.join(' ');
+	return result;
+}
+
+// One <Style> per <link rel="stylesheet">, in HTML order, pointing at the converted .uss next to the .uxml.
+function styleLinks($, ctx) {
+	if (ctx.config?.options?.styleLinks === false) return '';
+
+	let styles = '';
+	$('link[rel="stylesheet"]').each((_, link) => {
+		const href = $(link).attr('href');
+		if (!href) return;
+		const name = href.split(/[\\/]/).pop().replace(/\.[^.]*$/, '');
+		if (ctx.cssNames && !ctx.cssNames.includes(name)) {
+			console.warn(`Stylesheet "${href}" is not among the converted CSS files; no <Style> written for it.`);
+			return;
+		}
+		styles += `<Style src="${name}.uss" />`;
+	});
+	return styles;
+}
+
 function formatXml(xml, tab) {
     var formatted = '', indent= '';
     tab = tab || '\t';
@@ -106,6 +147,7 @@ function escapeXml(str) {
 
 module.exports = {
 	html2uxml,
+	dataAttributesToClasses,
 	html2uxmlFile,
 	formatXml,
 	escapeXml

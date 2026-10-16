@@ -22,7 +22,7 @@ async function convert(argv) {
 	let config;
 	if (argv.config) {
 		try {
-			let configPath = nodePath.resolve(__dirname, argv.config);
+			let configPath = nodePath.resolve(argv.config);
 			config = require(configPath);
 		} catch (error) {
 			console.warn(`Config file not found: ${argv.config}. Using defaults.`);
@@ -60,6 +60,8 @@ async function convert(argv) {
 		});
 	}
 
+	ctx.cssNames = cssFiles.map(f => f.name);
+
 	const writes = [];
 	for (let i = 0; i < htmlFiles.length; i++) {
 		writes.push(html2uxmlFile(htmlFiles[i].name, htmlFiles[i].data, ctx));
@@ -76,6 +78,7 @@ module.exports = convert;
 
 // Export internal functions for testing
 module.exports._internal = {
+	html2uxml,
 	escapeXml,
 	formatXml,
 	translateValue,
