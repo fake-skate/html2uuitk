@@ -227,7 +227,9 @@ function parseBorder(value) {
 
 function getAssetPath(value, ctx) {
 	if (ctx.config.assets && ctx.config.assets[value]) {
-		return `url("${ctx.config.assets[value].path}")`;
+		const path = ctx.config.assets[value].path;
+		// Older configs wrote the path as url('...') already
+		return /^url\(/.test(path) ? path : `url("${path}")`;
 	}
 	console.warn(`- Asset not mapped: ${value}`);
 	return value;

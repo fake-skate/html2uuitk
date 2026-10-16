@@ -1028,3 +1028,10 @@ describe('html2uxml style links', () => {
 		assert.ok(!html2uxml('t', html, ctx).includes('<Style'));
 	});
 });
+
+describe('getAssetPath url()', () => {
+	it('does not wrap a path that is already url(...)', () => {
+		const ctx = { config: { assets: { VCR: { path: "url('project:/Assets/Fonts/VCR.ttf')" } } } };
+		assert.strictEqual(getAssetPath('VCR', ctx), "url('project:/Assets/Fonts/VCR.ttf')");
+	});
+});
