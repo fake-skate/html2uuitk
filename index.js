@@ -5,8 +5,8 @@ const { tagMap, htmlOnlyElements, uxmlSkipTags, cssOnlyProperties } = require('.
 const { convertRelativeUnits, convertModernColorSyntax, splitCssTokens, isLengthToken, isColorToken } = require('./src/css-value-utils');
 const { extractCssVariables, resolveVariable, resolveValueWithVariables } = require('./src/css-variables');
 const { transformProperty, translateValue, expandBorderRadius, expandShorthand, mapDisplayValue, mapOverflowValue, mapPositionValue, mapFontStyleValue, parseBackground, parseBorder, parseFont, parseBoxShadow, mapPseudoClass, getAssetPath, getExtras } = require('./src/css-transform');
-const { css2uss, convertCss } = require('./src/css2uss');
-const { html2uxml, formatXml, escapeXml } = require('./src/html2uxml');
+const { css2uss, convertCss, convertCssFile } = require('./src/css2uss');
+const { html2uxml, html2uxmlFile, formatXml, escapeXml } = require('./src/html2uxml');
 
 function getDefaultConfig() {
 	return {
@@ -62,11 +62,11 @@ async function convert(argv) {
 
 	const writes = [];
 	for (let i = 0; i < htmlFiles.length; i++) {
-		writes.push(html2uxml(htmlFiles[i].name, htmlFiles[i].data, ctx));
+		writes.push(html2uxmlFile(htmlFiles[i].name, htmlFiles[i].data, ctx));
 	}
 
 	for (let i = 0; i < cssFiles.length; i++) {
-		writes.push(convertCss(cssFiles[i].name, cssFiles[i].data, ctx));
+		writes.push(convertCssFile(cssFiles[i].name, cssFiles[i].data, ctx));
 	}
 
 	await Promise.all(writes);
