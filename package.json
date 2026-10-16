@@ -3,7 +3,7 @@
   "version": "0.4.1",
   "preferGlobal": true,
   "bin": {
-    "html2uuitk": "./convert.js"
+    "html2uuitk": "convert.js"
   },
   "author": "FS",
   "license": "ISC",
